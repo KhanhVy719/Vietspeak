@@ -1,0 +1,34 @@
+# Standard Gitignore
+.DS_Store
+Thumbs.db
+*.log
+
+# Dependencies
+node_modules/
+vendor/
+
+# Environment
+.env
+.env.backup
+.env.production
+.phpunit.result.cache
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Project specific (Laravel)
+presentation-management/vendor/
+presentation-management/node_modules/
+presentation-management/.env
+presentation-management/storage/*.key
+presentation-management/storage/logs/*.log
+presentation-management/storage/framework/views/*.php
+!presentation-management/storage/framework/views/.gitignore
+presentation-management/public/hot
+presentation-management/public/storage
+
+# Other sub-projects
+MBBank/node_modules/
