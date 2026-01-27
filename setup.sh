@@ -146,15 +146,12 @@ if [ -f "$LARAVEL_ENV" ]; then
   sed -i "s|APP_ENV=.*|APP_ENV=production|g" "$LARAVEL_ENV"
   sed -i "s|APP_DEBUG=.*|APP_DEBUG=false|g" "$LARAVEL_ENV"
   
-  # Update Database Connection (Docker Internal Network)
-  sed -i "s|DB_CONNECTION=.*|DB_CONNECTION=pgsql|g" "$LARAVEL_ENV"
-  sed -i "s|DB_HOST=.*|DB_HOST=db|g" "$LARAVEL_ENV"
-  sed -i "s|DB_PORT=.*|DB_PORT=5432|g" "$LARAVEL_ENV"
-  sed -i "s|DB_DATABASE=.*|DB_DATABASE=presentation_management|g" "$LARAVEL_ENV"
-  sed -i "s|DB_USERNAME=.*|DB_USERNAME=postgres|g" "$LARAVEL_ENV"
-  sed -i "s|DB_PASSWORD=.*|DB_PASSWORD=password|g" "$LARAVEL_ENV"
+  # NOTE: Database credentials are configured manually for Supabase
+  # Do NOT override DB_HOST, DB_PORT, DB_DATABASE, etc. here
+  # They are set in .env to point to Supabase
 
   echo "✅ Đã cập nhật APP_URL thành: https://$BACKEND_DOMAIN"
+  echo "ℹ️  Database đang kết nối với Supabase (không thay đổi)"
 else
   echo "❌ LỖI: Không thể tạo file .env! Vui lòng kiểm tra lại."
   exit 1
