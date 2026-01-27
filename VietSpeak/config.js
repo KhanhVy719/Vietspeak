@@ -1,5 +1,5 @@
 const CONFIG = {
-    API_URL: '/api',
+    API_URL: 'https://api.khanhwiee.site/api',
     DEBUG: false
 };
 
