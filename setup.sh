@@ -14,6 +14,32 @@ if [ -z "$DOMAIN_NAME" ]; then
   exit 1
 fi
 
+# 1.1 Check & Install Docker (Auto)
+if ! command -v docker &> /dev/null; then
+    echo ""
+    echo "📦 KHÔNG TÌM THẤY DOCKER! ĐANG TỰ ĐỘNG CÀI ĐẶT..."
+    echo "PLEASE WAIT / VUI LÒNG ĐỢI..."
+    
+    # Update & Install Curl if missing
+    if [ -x "$(command -v apt-get)" ]; then
+        apt-get update >/dev/null 2>&1
+        apt-get install -y curl git >/dev/null 2>&1
+    elif [ -x "$(command -v yum)" ]; then
+        yum install -y curl git >/dev/null 2>&1
+    fi
+
+    # Install Docker using official script
+    curl -fsSL https://get.docker.com -o get-docker.sh
+    sh get-docker.sh
+    rm get-docker.sh
+    
+    # Enable service
+    service docker start 2>/dev/null || systemctl start docker 2>/dev/null
+    
+    echo "✅ Đã cài đặt xong Docker!"
+    echo ""
+fi
+
 # 2. Ask for Email
 read -p "👉 Nhập Email để đăng ký SSL (ví dụ: admin@gmail.com): " SSL_EMAIL
 if [ -z "$SSL_EMAIL" ]; then
