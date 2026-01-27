@@ -70,12 +70,30 @@ else
     exit 1
 fi
 
+# Check if Docker Daemon is running
+if ! docker info > /dev/null 2>&1; then
+    echo "⚠️ Docker Daemon chưa chạy. Đang thử khởi động..."
+    service docker start || systemctl start docker
+    sleep 5
+    
+    if ! docker info > /dev/null 2>&1; then
+        echo "❌ LỖI: Không thể kết nối với Docker Daemon."
+        echo "👉 Hãy thử chạy lệnh: 'sudo service docker start' rồi chạy lại script này."
+        exit 1
+    fi
+fi
+
 if [ "$RUN_NOW" = "y" ] || [ "$RUN_NOW" = "Y" ]; then
   echo "🚀 Đang khởi động hệ thống..."
-  $DOCKER_COMPOSE_CMD -f docker-compose.prod.yml --env-file .env.prod up -d --build
   
-  echo "⏳ Đang đợi Database và Server khởi động (10s)..."
-  sleep 10
+  # Run Docker Compose with error checking
+  if ! $DOCKER_COMPOSE_CMD -f docker-compose.prod.yml --env-file .env.prod up -d --build; then
+      echo "❌ Lỗi khi chạy Docker Compose. Vui lòng kiểm tra log ở trên."
+      exit 1
+  fi
+  
+  echo "⏳ Đang đợi Database và Server khởi động (15s)..."
+  sleep 15
 
   echo "🛠️ Đang chạy các lệnh thiết lập cuối cùng..."
   docker exec laravel_app php artisan storage:link
