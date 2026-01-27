@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập - VietSpeak Academy</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Standalone Login Styles Overrides */
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* Prevent scrolling on full screen split */
+            background: #fff;
+        }
+        
+        /* Reset header for this page if needed, but we typically won't include it */
+        header, footer {
+            display: none !important; /* Force hide if they were somehow included via JS (not the case here but good practice) */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="split-screen-container">
+        <!-- Left Side: Image & Branding -->
+        <div class="split-left">
+            <div class="brand-overlay">
+                <a href="index.html" class="login-logo">VietSpeak</a>
+                <div class="brand-text">
+                    <h1>Nâng Tầm<br>Giọng Nói Việt</h1>
+                    <p>Truy cập vào kho tàng kiến thức và công cụ AI độc quyền dành riêng cho học viên.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side: Login Form -->
+        <div class="split-right">
+            <div class="login-wrapper">
+                <div class="form-header">
+                    <h2>Chào mừng trở lại!</h2>
+                    <p>Vui lòng đăng nhập để tiếp tục</p>
+                </div>
+
+                <form id="loginForm" onsubmit="return handleLogin(event)">
+                    <div class="input-group">
+                        <label for="email">Email</label>
+                        <div class="input-field">
+                            <span class="icon">✉️</span>
+                            <input type="email" id="email" name="email" required placeholder="name@example.com">
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="password">Mật khẩu</label>
+                        <div class="input-field">
+                            <span class="icon">🔒</span>
+                            <input type="password" id="password" name="password" required placeholder="Enter your password">
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <div class="remember-me">
+                            <input type="checkbox" id="remember">
+                            <label for="remember">Ghi nhớ đăng nhập</label>
+                        </div>
+                        <a href="#" class="forgot-pass">Quên mật khẩu?</a>
+                    </div>
+
+                    <div id="errorMessage" class="error-message"></div>
+                    
+                    <button type="submit" class="login-btn-large" id="loginBtn">Đăng Nhập Học Viên</button>
+                </form>
+
+                <div class="divider">
+                    <span>HOẶC</span>
+                </div>
+
+                <a href="http://presentation-management.test/login" class="login-btn-laravel">
+                    <span>🔐</span> Truy cập Hệ thống Quản lý (LMS)
+                </a>
+
+                <div class="login-footer">
+                    <p>Chưa có tài khoản? <a href="register.html">Đăng ký khóa học</a></p>
+                    <a href="index.html" class="back-home">← Quay lại trang chủ</a>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="auth.js"></script>
+</body>
+</html>

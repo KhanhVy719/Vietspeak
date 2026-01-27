@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khóa Học VietSpeak - Nâng Tầm Tiếng Nói</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <!-- Inline style for page-specific overrides if needed, but try to avoid -->
+</head>
+<body>
+
+    <header>
+        <a href="index.html" class="logo">VietSpeak</a>
+        <nav>
+            <a href="index.html">Trang chủ</a>
+            <a href="khoa-hoc.html">Khoá học</a>
+            <a href="ai.html">AI Phân Tích</a>
+            <a href="thu-vien.html">Thư viện tài liệu</a>
+            <a href="login.html">Đăng nhập</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <h1 class="section-title">Chọn Lộ Trình Của Bạn</h1>
+        
+        <div class="courses-wrapper" id="coursesContainer">
+            <div style="width: 100%; text-align: center; padding-top: 100px; color: #666;">
+                <i>🔄</i> Đang tải dữ liệu khóa học...
+            </div>
+        </div>
+    </div>
+
+    <!-- CONFIG must be loaded before our script -->
+    <script src="config.js"></script> 
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+             // Load courses
+             try {
+                 // CONFIG is defined in config.js
+                 const response = await fetch(`${CONFIG.API_URL}/public/courses`);
+                 const res = await response.json();
+                 
+                 const container = document.getElementById('coursesContainer');
+                 
+                 if (res.success && res.data.length > 0) {
+                     container.innerHTML = res.data.map((course, index) => {
+                         const isActive = index === 0 ? 'active' : '';
+                         // Default bg if no thumbnail
+                         const bgStyle = course.thumbnail ? `background-image: url('${course.thumbnail}');` : ''; 
+                         
+                         return `
+                            <div class="course-card ${isActive}" onclick="activateCard(this)">
+                                <span class="badge">${course.level || 'NEW'}</span>
+                                <div class="card-header">
+                                    <h2>${course.name}</h2>
+                                </div>
+                                <div class="course-details">
+                                    <span class="price">${course.formatted_price}</span>
+                                    <div class="info-section">
+                                        <span class="info-title">📍 Mô tả</span>
+                                        <p class="info-content">${course.description || 'Chưa có mô tả chi tiết.'}</p>
+                                    </div>
+                                    <div class="info-section">
+                                        <span class="info-title">👨‍🏫 Giảng viên</span>
+                                        <p class="info-content">${course.instructor || 'VietSpeak Team'}</p>
+                                    </div>
+                                    <a href="https://forms.gle/jTrXji6UaLHRuqJ4A" target="_blank" class="btn-reg">Click để nhận tư vấn</a>
+                                </div>
+                            </div>
+                         `;
+                     }).join('');
+                 } else {
+                     container.innerHTML = '<div style="text-align: center; width: 100%;">Hiện chưa có khóa học nào được mở.</div>';
+                 }
+                 
+             } catch(e) {
+                 console.error(e);
+                 document.getElementById('coursesContainer').innerHTML = '<div style="text-align: center; width: 100%; color: red;">Lỗi tải dữ liệu. Vui lòng thử lại sau.</div>';
+             }
+        });
+
+        function activateCard(card) {
+            const cards = document.querySelectorAll('.course-card');
+            cards.forEach(c => c.classList.remove('active'));
+            card.classList.add('active');
+        }
+    </script>
+    <script src="auth.js"></script>
+</body>
+</html>

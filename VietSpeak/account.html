@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tài Khoản Cá Nhân - VietSpeak Academy</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Shared Styles moved to styles.css */
+        
+        /* Page Specific Styles */
+        /* --- DASHBOARD LAYOUT --- */
+        /* .container from styles.css is used, but account might need override or uses same class? */
+        /* styles.css defines .container with 60px margin. account.html used 40px. Close enough. */
+        
+        /* Ensure container respects dashboard grid layout */
+        .container {
+             display: grid;
+             grid-template-columns: 300px 1fr;
+             gap: 30px;
+             margin-top: 40px; /* Override styles.css margin-top for dashboard */
+        }
+
+        /* --- SIDEBAR TRÁI --- */
+        /* Styles moved to styles.css */
+
+        /* --- ASSIGNMENT VIEW STYLES --- */
+        .tabs-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 0px; 
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            color: #7f8c8d;
+            position: relative;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+            border-bottom: none;
+            border-radius: 8px 8px 0 0;
+            margin-bottom: -2px;
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+            border-color: #1a3a5f;
+            background-color: white;
+            z-index: 10;
+        }
+
+        .tab-btn:hover:not(.active) {
+            color: var(--primary);
+            background-color: #f8f9fa;
+        }
+
+        .assignment-card {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border-left: 6px solid #ccc;
+            transition: transform 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .assignment-card:hover { content: ""; transform: translateY(-3px); box-shadow: 0 8px 15px rgba(0,0,0,0.1); }
+        .card-content h3 { color: var(--primary); margin-bottom: 5px; font-size: 1.2rem; }
+        .card-meta { font-size: 0.9rem; color: #666; margin-bottom: 10px; }
+        .status-badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; margin-top: 5px; }
+        .status-pending { background-color: #ffeaa7; color: #d35400; }
+        .status-submitted { background-color: #81ecec; color: #009aa6; }
+        .status-graded { background-color: #a3e6aa; color: #1e8449; }
+        .status-overdue { background-color: #fab1a0; color: #c0392b; }
+        .btn-submit { background-color: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: background 0.2s; }
+        .btn-submit:hover { background-color: #2c5282; }
+        
+        .empty-state i {
+            font-style: normal;
+            font-size: 5rem;
+            margin-bottom: 20px;
+            display: block;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        /* Notification Badge (Red Dot) */
+        .notification-badge {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background-color: #e63946;
+            border-radius: 50%;
+            margin-left: 8px;
+            vertical-align: middle;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.2); }
+        }
+
+        /* Modal Styles */
+        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5); backdrop-filter: blur(5px); }
+        .modal-content { background-color: #fefefe; margin: 10% auto; padding: 30px; border-radius: 15px; width: 90%; max-width: 500px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); animation: slideDown 0.3s ease; }
+        @keyframes slideDown { from { top: -50px; opacity: 0; } to { top: 0; opacity: 1; } }
+        .close-btn { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
+        
+        .file-upload-wrapper { border: 2px dashed #ccc; padding: 30px; text-align: center; border-radius: 8px; cursor: pointer; transition: border 0.3s; }
+        .file-upload-wrapper:hover { border-color: var(--primary); background-color: #f9fbfd; }
+        .form-control { width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 8px; margin-top: 5px; box-sizing: border-box; }
+
+        /* --- NỘI DUNG CHÍNH --- */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: var(--white);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+
+        .stat-value {
+            display: block;
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: #7f8c8d;
+            text-transform: uppercase;
+        }
+        
+        /* Section Titles */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .section-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.25rem;
+            color: var(--primary);
+        }
+
+        /* Course List Styles */
+        .course-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        /* Course Card Styled */
+        .class-item {
+             background: #fdfdfd;
+             border: 1px solid #eee;
+             border-left: 4px solid var(--accent);
+             padding: 15px;
+             border-radius: 8px;
+             transition: all 0.2s;
+        }
+        
+        .class-item:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transform: translateY(-2px);
+        }
+        
+        .class-item h4 {
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+
+        /* Assignments */
+        .assignments-container {
+            background: var(--white);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+        }
+        
+        .assignment-item {
+            border-left: 4px solid var(--primary);
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 0 10px 10px 0;
+            margin-bottom: 15px;
+        }
+        
+        .assignment-item h4 {
+            color: var(--primary);
+            margin-bottom: 5px;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 30px;
+            color: #888;
+            font-style: italic;
+        }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 900px) {
+            .container { grid-template-columns: 1fr; margin: 20px auto; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .profile-sidebar { 
+                padding: 20px;
+                display: flex;
+                flex-direction: column;
+                align-items: center; 
+            }
+            .avatar-circle { width: 100px; height: 100px; }
+            .menu-list {
+                width: 100%;
+                display: flex;
+                flex-direction: column; 
+            }
+            .modal-content { width: 95%; margin: 20% auto; padding: 20px; }
+        }
+
+        /* Small mobile optimization */
+        @media (max-width: 480px) {
+            .logo { font-size: 1.4rem; }
+            .stat-value { font-size: 1.5rem; }
+            .assignment-card { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .btn-submit { width: 100%; margin-top: 10px; }
+        }
+        
+        /* Helper Classes */
+        .text-center { text-align: center; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="index.html" class="logo">VietSpeak</a>
+        <nav>
+            <a href="index.html">Trang chủ</a>
+            <a href="khoa-hoc.html">Khoá học</a>
+            <a href="ai.html">AI Phân Tích</a>
+            <a href="thu-vien.html">Thư viện tài liệu</a>
+            <a href="account.html" class="active">Tài khoản</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="profile-sidebar">
+            <div class="avatar-circle">
+                <img src="https://ui-avatars.com/api/?name=User&background=1a3a5f&color=fff" alt="Avatar" id="avatarImg">
+            </div>
+            
+            <h2 class="profile-name" id="userName">Đang tải...</h2>
+            <p class="profile-email" id="userEmail">...</p>
+            <p class="profile-rank">Học viên hạng Vàng</p>
+            
+            <div style="background: #e1f5fe; padding: 10px; border-radius: 8px; margin: 15px 0; border: 1px solid #81d4fa;">
+                <span style="display: block; font-size: 0.8rem; color: #0277bd;">Số dư ví</span>
+                <span style="display: block; font-size: 1.4rem; font-weight: 900; color: #01579b;" id="userBalance">0 ₫</span>
+                <button onclick="openDepositModal()" style="background: #0288d1; color: white; border: none; padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; margin-top: 5px; cursor: pointer; font-weight: bold;">
+                    + Nạp Thêm
+                </button>
+            </div>
+
+            <div style="background: #f3e5f5; padding: 10px; border-radius: 8px; margin: 5px 0; border: 1px solid #ce93d8;">
+                <span style="display: block; font-size: 0.8rem; color: #7b1fa2;">Lượt AI Phân Tích</span>
+                <span style="display: block; font-size: 1.4rem; font-weight: 900; color: #6a1b9a;" id="userCredits">0</span>
+                <span style="font-size: 0.75rem; color: #8e24aa;">(Ưu tiên dùng trước tiền)</span>
+            </div>
+            
+            <button class="change-avatar-btn" onclick="document.getElementById('avatarInput').click()">
+                📷 Đổi ảnh đại diện
+            </button>
+            <input type="file" id="avatarInput" hidden accept="image/*">
+            
+            <ul class="menu-list">
+                <li><a href="#" onclick="switchView('dashboard'); return false;" class="menu-item active" id="menu-dashboard"><i style="color: inherit">👤</i> Thông tin cá nhân</a></li>
+                <li><a href="#" onclick="switchView('assignments'); return false;" class="menu-item" id="menu-assignments"><i style="color: #3498db">📝</i> Bài tập & Nộp bài</a></li>
+                <li style="margin-top: 20px;"><a href="#" onclick="logout(); return false;" class="menu-item" style="color: #dc3545;">
+                    <i style="color: inherit">🚪</i> Đăng xuất
+                </a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- VIEW: DASHBOARD (Default) -->
+            <div id="dashboard-view">
+            <h1 style="font-family: 'Montserrat'; color: var(--primary);" id="welcomeMessage">Tổng quan học tập</h1>
+            
+            <!-- Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-value" id="totalClasses">0</span>
+                    <span class="stat-label">Lớp học tham gia</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value" id="averageGrade">--</span>
+                    <span class="stat-label">Điểm trung bình</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value" id="submittedStats">0/0</span>
+                    <span class="stat-label">Bài tập đã hoàn thành</span>
+                </div>
+            </div>
+
+            <!-- Classes Section -->
+            <div class="assignments-container" style="margin-bottom: 20px;">
+                <div class="section-header">
+                    <h3 class="section-title">📘 Lớp học của tôi</h3>
+                </div>
+                <div id="classesList">
+                    <div class="empty-state">Đang tải lớp học...</div>
+                </div>
+            </div>
+
+            <!-- Courses Section -->
+            <div class="assignments-container" style="margin-bottom: 20px;">
+                <div class="section-header">
+                    <h3 class="section-title">🎓 Khóa học của tôi</h3>
+                </div>
+                <div class="course-list" id="coursesList">
+                    <div class="empty-state">Đang tải khóa học...</div>
+                </div>
+            </div>
+
+            <!-- Submitted Assignments Removed -->
+
+            <!-- Section "Bài tập cần làm" removed as requested -->
+            </div> <!-- End Dashboard View -->
+
+            <!-- VIEW: ASSIGNMENTS (Hidden by default) -->
+            <div id="assignments-view" style="display: none;">
+                <h1 style="font-family: 'Montserrat'; color: var(--primary); margin-bottom: 20px;">Bài Tập & Nộp Bài</h1>
+                
+                <!-- Filter Tabs -->
+                <div class="tabs-container">
+                    <button class="tab-btn active" onclick="filterAssignments('pending')" id="tab-pending">
+                        Cần làm <span id="pending-notification" class="notification-badge" style="display: none;"></span>
+                    </button>
+                    <button class="tab-btn" onclick="filterAssignments('submitted')" id="tab-submitted">
+                        Đã nộp/Đã chấm
+                    </button>
+                </div>
+
+                <!-- Full Assignments List -->
+                <div id="full-assignments-list" class="assignment-list">
+                    <div class="empty-state">
+                        <i>⏳</i>
+                        <p>Đang tải danh sách bài tập...</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Submit Modal -->
+    <div id="submitModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <h2 style="margin-bottom: 20px; color: var(--primary);">Nộp Bài Tập</h2>
+            <p id="modalTaskTitle" style="margin-bottom: 20px; font-weight: 500; color: #666;"></p>
+            
+            <form id="submissionForm" onsubmit="handleSubmission(event)">
+                <input type="hidden" id="assignmentId" name="assignment_id">
+                
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; font-weight: 600; margin-bottom: 5px;">Tải lên File/Video</label>
+                    <div class="file-upload-wrapper" onclick="document.getElementById('fileInput').click()">
+                        <p id="fileNameDisplay">📁 Nhấn để chọn file (PDF, PPTX, MP4...)</p>
+                        <input type="file" id="fileInput" name="file" required style="display: none" onchange="updateFileName(this)">
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; font-weight: 600; margin-bottom: 5px;">Ghi chú (Bắt buộc)</label>
+                    <textarea class="form-control" name="content" rows="3" placeholder="Lời nhắn cho giảng viên..." required></textarea>
+                </div>
+
+                <div id="submissionError" style="display: none; color: #dc3545; background-color: #f8d7da; border: 1px solid #f5c6cb; padding: 10px; border-radius: 5px; margin-bottom: 15px; font-size: 0.9rem;"></div>
+
+                <button type="submit" class="btn-submit" style="width: 100%; justify-content: center;">
+                    🚀 Gửi Bài Ngay
+                </button>
+            </form>
+        </div>
+        </div>
+    </div>
+
+    <!-- Deposit Modal -->
+    <div id="depositModal" class="modal">
+        <div class="modal-content" style="max-width: 400px; text-align: center;">
+            <span class="close-btn" onclick="closeDepositModal()">&times;</span>
+            <h2 style="color: var(--primary); margin-bottom: 5px;">Nạp Tiền Vào Ví</h2>
+            <p style="color: #666; font-size: 0.9rem; margin-bottom: 25px;">Chọn mệnh giá nạp qua QR Code (SePay)</p>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                <button onclick="processDeposit(10000)" class="deposit-btn">10,000 ₫</button>
+                <button onclick="processDeposit(20000)" class="deposit-btn">20,000 ₫</button>
+                <button onclick="processDeposit(50000)" class="deposit-btn">50,000 ₫</button>
+                <button onclick="processDeposit(100000)" class="deposit-btn">100,000 ₫</button>
+            </div>
+            
+            <div id="depositLoading" style="display: none; color: #0288d1; margin-top: 10px;">
+                <i>🔄</i> Đang tạo mã QR...
+            </div>
+
+            <div id="checkPaymentSection" style="display: none; margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px;">
+                <p style="font-size: 0.9rem; color: #555; margin-bottom: 10px;">
+                    Sau khi chuyển khoản thành công, vui lòng bấm nút dưới đây để hệ thống kiểm tra ngay lập tức.
+                </p>
+                <button onclick="checkTransactionStatus()" style="background: #27ae60; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%;">
+                    ✅ Tôi Đã Chuyển Khoản
+                </button>
+                <p id="checkStatusMsg" style="margin-top: 10px; font-size: 0.85rem;"></p>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .deposit-btn {
+            background: white;
+            border: 2px solid #e1e8ed;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: 700;
+            color: var(--primary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .deposit-btn:hover {
+            border-color: #3498db;
+            color: #3498db;
+            background: #f0f9ff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(52, 152, 219, 0.15);
+        }
+
+        .deposit-btn:active, .deposit-btn.selected {
+             border-color: #2980b9;
+             background: #eaf6fc;
+             transform: translateY(0);
+        }
+    </style>
+
+    <footer style="text-align: center; padding: 40px; color: #a4b0be; font-size: 0.8rem;">
+        &copy; 2026 VietSpeak Academy Personal Portal.
+    </footer>
+    
+    <script src="config.js"></script>
+    <script src="auth.js"></script>
+    <script src="avatar.js"></script>
+    <script src="account.js"></script>
+    <script src="baitap.js"></script>
+
+    <script>
+        // Switch View Logic
+        function switchView(viewName) {
+            const dashboardView = document.getElementById('dashboard-view');
+            const assignmentsView = document.getElementById('assignments-view');
+            const menuDashboard = document.getElementById('menu-dashboard');
+            const menuAssignments = document.getElementById('menu-assignments');
+
+            if (viewName === 'assignments') {
+                dashboardView.style.display = 'none';
+                assignmentsView.style.display = 'block';
+                menuDashboard.classList.remove('active');
+                menuAssignments.classList.add('active');
+                
+                // Trigger load logic from baitap.js if needed
+                if (typeof loadAssignments === 'function') {
+                     loadAssignments(); 
+                }
+            } else {
+                dashboardView.style.display = 'block';
+                assignmentsView.style.display = 'none';
+                menuDashboard.classList.add('active');
+                menuAssignments.classList.remove('active');
+                
+                // Reload stats when returning to dashboard
+                if (typeof loadProgress === 'function') loadProgress();
+            }
+        }
+
+        // --- DEPOSIT LOGIC ---
+        function openDepositModal() {
+            document.getElementById('depositModal').style.display = 'block';
+            document.getElementById('checkPaymentSection').style.display = 'none';
+            document.getElementById('checkStatusMsg').textContent = '';
+        }
+
+        function closeDepositModal() {
+            document.getElementById('depositModal').style.display = 'none';
+            document.getElementById('depositLoading').style.display = 'none';
+        }
+        
+        let currentOrderDescription = '';
+        let currentOrderAmount = 0;
+
+        // Formatter tiền tệ
+        const moneyFormatter = new Intl.NumberFormat('vi-VN', {
+            style: 'currency',
+            currency: 'VND'
+        });
+
+        // Cập nhật hiển thị số dư khi load trang
+        // account.js sẽ gọi fetchProfile, lúc đó ta cần hứng data để update UI balance
+        // Nhưng account.js chưa có logic này, ta thêm thủ công listener hoặc sửa account.js
+        // Tạm thời override fetchProfile trong account.js sau, hoặc hook vào window load
+        
+        async function processDeposit(amount) {
+            const loading = document.getElementById('depositLoading');
+            loading.style.display = 'block';
+            
+            try {
+                const token = localStorage.getItem('vietspeak_token');
+                if (!token) {
+                    alert('Phiên đăng nhập hết hạn!');
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                const response = await fetch(`${CONFIG.API_URL}/payment/create-link`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ amount: amount })
+                });
+                
+                const res = await response.json();
+                
+                if (response.ok && res.success) {
+                    // Save for check
+                    currentOrderDescription = res.data.description;
+                    currentOrderAmount = amount;
+
+                    // Show QR Code inline
+                    const modalContent = document.querySelector('#depositModal .modal-content');
+                    
+                    // Xóa nút chọn mệnh giá cũ để hiện QR
+                    const grids = modalContent.querySelectorAll('div[style*="grid-template-columns"]');
+                    if(grids.length > 0) grids[0].style.display = 'none';
+
+                    // Tạo hoặc update vùng chứa QR
+                    let qrContainer = document.getElementById('qrDisplayArea');
+                    if (!qrContainer) {
+                        qrContainer = document.createElement('div');
+                        qrContainer.id = 'qrDisplayArea';
+                        qrContainer.style.marginTop = '20px';
+                        // Insert before check section
+                        document.getElementById('checkPaymentSection').before(qrContainer);
+                    }
+                    
+                    qrContainer.innerHTML = `
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; border: 1px solid #eee;">
+                            <p style="font-weight: bold; color: var(--primary); margin-bottom: 10px;">Quét mã để thanh toán</p>
+                            <img src="${res.data.qr_url}" alt="QR Code" style="width: 100%; max-width: 250px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                            <p style="margin-top: 10px; font-size: 0.9rem;">
+                                Số tiền: <strong style="color: #e63946; font-size: 1.1rem;">${moneyFormatter.format(amount)}</strong>
+                            </p>
+                            <p style="margin-top: 5px; font-size: 0.9rem; color: #555;">
+                                Nội dung: <strong style="color: #2980b9; background: #eab; padding: 2px 6px; border-radius: 4px; color: white;">${res.data.description}</strong>
+                            </p>
+                        </div>
+                    `;
+                    
+                    loading.style.display = 'none';
+                    
+                    // Show Check Button
+                    document.getElementById('checkPaymentSection').style.display = 'block';
+                    
+                } else {
+                    alert('Lỗi tạo đơn: ' + (res.message || 'Không rõ nguyên nhân'));
+                    loading.style.display = 'none';
+                }
+
+            } catch (e) {
+                console.error(e);
+                alert('Có lỗi xảy ra khi kết nối server.');
+                loading.style.display = 'none';
+            }
+        }
+
+        async function checkTransactionStatus() {
+            const statusMsg = document.getElementById('checkStatusMsg');
+            statusMsg.textContent = '⏳ Đang kiểm tra giao dịch...';
+            statusMsg.style.color = '#e67e22';
+
+            if (!currentOrderDescription) {
+                statusMsg.textContent = '❌ Không tìm thấy thông tin đơn hàng.';
+                statusMsg.style.color = 'red';
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('vietspeak_token');
+                const response = await fetch(`${CONFIG.API_URL}/payment/check-transaction`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        order_id: 'MANUAL_CHECK', // Placeholder
+                        order_description: currentOrderDescription,
+                        amount: currentOrderAmount
+                    })
+                });
+
+                const res = await response.json();
+                
+                if (res.success) {
+                    statusMsg.textContent = '✅ ' + res.message;
+                    statusMsg.style.color = 'green';
+                    alert(res.message);
+                    
+                    // Reload balance
+                    document.getElementById('userBalance').textContent = moneyFormatter.format(res.new_balance);
+                    
+                    setTimeout(() => {
+                        closeDepositModal();
+                        // Optional: Reload page
+                    }, 2000);
+                } else {
+                    statusMsg.textContent = '❌ ' + res.message;
+                    statusMsg.style.color = 'red';
+                }
+
+            } catch (e) {
+                console.error(e);
+                statusMsg.textContent = '❌ Lỗi kết nối.';
+                statusMsg.style.color = 'red';
+            }
+        }
+    </script>
+</html>

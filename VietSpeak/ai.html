@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Phân Tích - VietSpeak Academy</title>
+    <link rel="icon" type="image/png" href="logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+    <header>
+        <a href="index.html" class="logo">VietSpeak</a>
+        <nav>
+            <a href="index.html">Trang chủ</a>
+            <a href="khoa-hoc.html">Khoá học</a>
+            <a href="ai.html">AI Phân Tích</a>
+            <a href="thu-vien.html">Thư viện tài liệu</a>
+            <a href="login.html">Đăng nhập</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <h1 class="page-title">Hệ Thống <span>AI Chẩn Đoán</span></h1>
+
+        <div class="split-box">
+            <div class="card">
+                <h2>Phân tích Giọng nói</h2>
+                <label class="upload-zone">
+                    <p style="font-size: 2rem; margin-bottom: 10px;">🎙️</p>
+                    <span>Tải lên file âm thanh (.mp3, .wav)</span>
+                    <input type="file" id="audioInput" accept="audio/*">
+                </label>
+                <audio id="audioPreview" controls style="display:none;"></audio>
+                <button class="analyze-btn" onclick="analyzeAudio()">Bắt đầu phân tích</button>
+            </div>
+
+            <div class="card">
+                <h2>Phân tích Hình ảnh</h2>
+                <label class="upload-zone">
+                    <p style="font-size: 2rem; margin-bottom: 10px;">📸</p>
+                    <span>Tải lên ảnh chân dung thuyết trình</span>
+                    <input type="file" id="imgInput" accept="image/*">
+                </label>
+                <img id="preview" class="preview-img" />
+                <button class="analyze-btn" onclick="analyzeImage()">Kiểm tra phong thái</button>
+            </div>
+
+            <div class="card">
+                <h2>Phân tích Video 🎥</h2>
+                <p style="font-size: 0.85rem; color: #666; margin: -5px 0 15px;">
+                    💰 Chi phí: <strong style="color: #e63946;">5,000 VND</strong> mỗi lần phân tích
+                </p>
+                <label class="upload-zone">
+                    <p style="font-size: 2rem; margin-bottom: 10px;">🎬</p>
+                    <span>Tải lên video thuyết trình (.mp4, .mov, .avi)</span>
+                    <input type="file" id="videoInput" accept="video/*">
+                </label>
+                <video id="videoPreview" controls style="display:none; max-width: 100%; border-radius: 8px; margin-top: 10px;"></video>
+                <button class="analyze-btn" onclick="analyzeVideo()">Phân tích Video (5k)</button>
+            </div>
+        </div>
+
+        <div class="result-wrapper">
+            <h3>Báo cáo chi tiết từ AI</h3>
+            <div id="result">Kết quả phân tích sẽ được hiển thị tại đây sau khi bạn tải file và nhấn nút...</div>
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script>
+        // Use generic model name or let backend decide.
+        // Backend defaults to 1.5-flash. We can request 2.0 or 2.5 if we want.
+        const PREFERRED_MODEL = "gemini-2.5-flash"; // Request this model
+        
+        // No auto-config needed for backend proxy
+        
+        /* ----------- PREVIEW AUDIO ----------- */
+
+        /* ----------- PREVIEW AUDIO ----------- */
+        document.getElementById("audioInput").onchange = function () {
+            const file = this.files[0];
+            const audio = document.getElementById("audioPreview");
+
+            if (file) {
+                audio.src = URL.createObjectURL(file);
+                audio.style.display = "block";
+            } else {
+                audio.style.display = "none";
+                audio.src = "";
+            }
+        };
+
+        /* ----------- PHÂN TÍCH GIỌNG NÓI (Backend Proxy) ----------- */
+        async function analyzeAudio() {
+            const fileInput = document.getElementById("audioInput");
+            const resultBox = document.getElementById("result");
+
+            if (!fileInput.files[0]) {
+                resultBox.innerText = "Vui lòng chọn file âm thanh (mp3/wav)!";
+                return;
+            }
+
+            const file = fileInput.files[0];
+            // Frontend limit check (optional)
+            if (file.size > 20 * 1024 * 1024) {
+                 resultBox.innerText = "File quá lớn! Vui lòng chọn file dưới 20MB.";
+                 return;
+            }
+
+            resultBox.innerText = "Đang gửi file âm thanh tới AI (quá trình này có thể mất vài giây)...";
+
+            try {
+                const base64Data = await toBase64Raw(file); 
+                const mimeType = file.type || "audio/mp3";
+
+                // Backend Payload
+                const payload = {
+                    prompt: "Hãy phân tích giọng nói chấm trên thang điểm 10 theo các tiêu chí: 1. Cảm xúc; 2. Tốc độ nói; 3. Sự rõ ràng; 4. Nhấn nhá; 5. Tự tin. Sau đó gợi ý cải thiện.",
+                    mime_type: mimeType,
+                    data: base64Data,
+                    model: PREFERRED_MODEL
+                };
+
+                const token = localStorage.getItem('vietspeak_token');
+                if (!token) {
+                    resultBox.innerText = "Vui lòng đăng nhập để sử dụng tính năng này.";
+                    return;
+                }
+
+                const response = await fetch(`${CONFIG.API_URL}/ai/analyze`, {
+                    method: "POST",
+                    headers: { 
+                        "Content-Type": "application/json",
+                        "Accept": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+
+                // Check for errors (including insufficient balance)
+                if (!response.ok) {
+                    // Backend sends error in 'message' or 'error' field
+                    const errorMsg = data.message || data.error || `Lỗi ${response.status}: ${response.statusText}`;
+                    resultBox.innerHTML = `<div style="color: #dc3545; background: #f8d7da; padding: 15px; border-radius: 8px; border: 1px solid #f5c6cb;">
+                        <strong>❌ Không thể phân tích</strong><br>${errorMsg}
+                    </div>`;
+                    return;
+                }
+                
+                // Update balance/credits in UI
+                if (data.new_balance !== undefined) {
+                    // Update LocalStorage
+                    const user = JSON.parse(localStorage.getItem('vietspeak_user') || '{}');
+                    user.balance = data.new_balance;
+                    localStorage.setItem('vietspeak_user', JSON.stringify(user));
+                    
+                    // Update Header UI balance display
+                    const balanceEl = document.querySelector('.user-nav-link div');
+                    if (balanceEl && balanceEl.textContent.includes('₫')) {
+                        balanceEl.textContent = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data.new_balance);
+                    }
+                }
+
+                if (data.candidates && data.candidates[0].content) {
+                    // Gemini format
+                    resultBox.innerText = data.candidates[0].content.parts[0].text;
+                } else if (data.choices && data.choices[0].message) {
+                    // OpenAI format
+                    resultBox.innerText = data.choices[0].message.content;
+                } else if (data.result) {
+                    // Generic Normalized Format
+                    resultBox.innerText = data.result;
+                } else {
+                    resultBox.innerText = "Lỗi từ AI Server: Không nhận được phản hồi hợp lệ.";
+                    console.error("Unknown AI Response:", data);
+                }
+
+            } catch (err) {
+                resultBox.innerHTML = `<div style="color: #dc3545; background: #f8d7da; padding: 15px; border-radius: 8px; border: 1px solid #f5c6cb;">
+                    <strong>❌ Lỗi kết nối</strong><br>${err.message}
+                </div>`;
+            }
+        }
+
+
+        /* ----------- PHÂN TÍCH ẢNH (Gemini Vision) ----------- */
+        document.getElementById("imgInput").onchange = function () {
+            const file = this.files[0];
+            const img = document.getElementById("preview");
+            if (file) {
+                img.src = URL.createObjectURL(file);
+                img.style.display = "block";
+            }
+        };
+
+        async function analyzeImage() {
+            const fileInput = document.getElementById("imgInput");
+            const resultBox = document.getElementById("result");
+
+            if (!fileInput.files[0]) {
+                resultBox.innerText = "Vui lòng chọn ảnh!";
+                return;
+            }
+
+            const file = fileInput.files[0];
+             if (file.size > 20 * 1024 * 1024) {
+                 resultBox.innerText = "File ảnh quá lớn! Vui lòng chọn file dưới 20MB.";
+                 return;
+            }
+
+            resultBox.innerText = "Đang phân tích hình ảnh...";
+
+            try {
+                const base64Data = await toBase64Raw(file);
+                const mimeType = file.type || "image/jpeg";
+
+                const payload = {
+                    prompt: "Hãy nhận xét theo các yếu tố: 1. Tư thế; 2. Trang phục; 3. Nét mặt; 4. Ánh mắt; 5. Phong thái. Chấm điểm 10 và gợi ý phát triển.",
+                    mime_type: mimeType,
+                    data: base64Data,
+                    model: PREFERRED_MODEL
+                };
+
+                const token = localStorage.getItem('vietspeak_token');
+                if (!token) {
+                    resultBox.innerText = "Vui lòng đăng nhập để sử dụng tính năng này.";
+                    return;
+                }
+
+                const response = await fetch(`${CONFIG.API_URL}/ai/analyze`, {
+                    method: "POST",
+                    headers: { 
+                        "Content-Type": "application/json",
+                        "Accept": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+
+                // Check for errors (including insufficient balance)
+                if (!response.ok) {
+                    const errorMsg = data.message || data.error || `Lỗi ${response.status}: ${response.statusText}`;
+                    resultBox.innerHTML = `<div style="color: #dc3545; background: #f8d7da; padding: 15px; border-radius: 8px; border: 1px solid #f5c6cb;">
+                        <strong>❌ Không thể phân tích</strong><br>${errorMsg}
+                    </div>`;
+                    return;
+                }
+
+                // Update balance in UI
+                if (data.new_balance !== undefined) {
+                     const user = JSON.parse(localStorage.getItem('vietspeak_user') || '{}');
+                     user.balance = data.new_balance;
+                     localStorage.setItem('vietspeak_user', JSON.stringify(user));
+                     
+                     const balanceEl = document.querySelector('.user-nav-link div');
+                     if (balanceEl && balanceEl.textContent.includes('₫')) {
+                         balanceEl.textContent = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data.new_balance);
+                     }
+                }
+
+                if (data.candidates && data.candidates[0].content) {
+                    resultBox.innerText = data.candidates[0].content.parts[0].text;
+                } else if (data.choices && data.choices[0].message) {
+                    resultBox.innerText = data.choices[0].message.content;
+                } else if (data.result) {
+                    resultBox.innerText = data.result;
+                } else {
+                    resultBox.innerText = "Lỗi từ AI Server: Không nhận được phản hồi hình ảnh.";
+                }
+
+            } catch (err) {
+                resultBox.innerHTML = `<div style="color: #dc3545; background: #f8d7da; padding: 15px; border-radius: 8px; border: 1px solid #f5c6cb;">
+                    <strong>❌ Lỗi kết nối</strong><br>${err.message}
+                </div>`;
+            }
+        }
+
+        /* ----------- PHÂN TÍCH VIDEO (Gemini 2.0 Vision) ----------- */
+        document.getElementById("videoInput")?.addEventListener('change', function () {
+            const file = this.files[0];
+            const video = document.getElementById("videoPreview");
+
+            if (file) {
+                // Check size (max 100MB)
+                if (file.size > 100 * 1024 * 1024) {
+                    alert('❌ File video quá lớn! Vui lòng chọn video dưới 100MB');
+                    this.value = '';
+                    video.style.display = "none";
+                    return;
+                }
+                video.src = URL.createObjectURL(file);
+                video.style.display = "block";
+            } else {
+                video.style.display = "none";
+                video.src = "";
+            }
+        });
+
+        async function analyzeVideo() {
+            const fileInput = document.getElementById("videoInput");
+            const resultBox = document.getElementById("result");
+
+            if (!fileInput.files[0]) {
+                resultBox.innerText = "Vui lòng chọn file video!";
+                return;
+            }
+
+            const file = fileInput.files[0];
+
+            // Double check size
+            if (file.size > 100 * 1024 * 1024) {
+                resultBox.innerHTML = `<div style="color: #dc3545;">❌ File video quá lớn! Vui lòng chọn file dưới 100MB</div>`;
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            resultBox.innerHTML = "⏳ Đang upload và phân tích video... Vui lòng chờ (có thể mất 30-90 giây vì video dung lượng lớn)...";
+
+            try {
+                const token = localStorage.getItem('vietspeak_token');
+                if (!token) {
+                    resultBox.innerText = "Vui lòng đăng nhập để sử dụng tính năng này.";
+                    return;
+                }
+
+                const response = await fetch(`${CONFIG.API_URL}/ai/analyze-video`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/json'
+                    },
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (!response.ok || !data.success) {
+                    const errorMsg = data.message || `Lỗi ${response.status}: ${response.statusText}`;
+                    resultBox.innerHTML = `<div style="color: #dc3545; background: #f8d7da; padding: 15px; border-radius: 8px; border: 1px solid #f5c6cb;">
+                        <strong>❌ Không thể phân tích video</strong><br>${errorMsg}
+                    </div>`;
+                    return;
+                }
+
+                // Update balance in localStorage
+                if (data.remaining_balance !== undefined) {
+                    const user = JSON.parse(localStorage.getItem('vietspeak_user') || '{}');
+                    user.balance = data.remaining_balance;
+                    user.ai_credits = data.remaining_credits;
+                    localStorage.setItem('vietspeak_user', JSON.stringify(user));
+                }
+
+                const costDisplay = data.used_credit 
+                    ? '<span style="color: #2ecc71;">Đã dùng 1 AI Credit (miễn phí)</span>'
+                    : `<span style="color: #e74c3c;">${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data.cost)}</span>`;
+
+                resultBox.innerHTML = `
+                    <div style="background: #d4edda; padding: 15px; border-radius: 8px; border-left: 4px solid #28a745; margin-bottom: 20px;">
+                        ✅ <strong>Phân tích video thành công!</strong><br>
+                        💰 Chi phí: ${costDisplay}<br>
+                        💳 Số dư còn lại: <strong>${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(data.remaining_balance)}</strong><br>
+                        🎯 AI Credits: <strong>${data.remaining_credits}</strong>
+                    </div>
+                    <h4 style="color: #1a3a5f; margin-top: 20px; border-bottom: 2px solid #1a3a5f; padding-bottom: 10px;">📊 Kết quả phân tích video:</h4>
+                    <div style="white-space: pre-wrap; line-height: 1.8; background: #f8f9fa; padding: 20px; border-radius: 8px; margin-top: 15px;">${data.result}</div>
+                `;
+
+            } catch (err) {
+                console.error(err);
+                resultBox.innerHTML = `<div style="color: #dc3545; background: #f8d7da; padding: 15px; border-radius: 8px; border: 1px solid #f5c6cb;">
+                    <strong>❌ Lỗi kết nối</strong><br>${err.message}
+                </div>`;
+            }
+        }
+
+        /* ----------- BASE64 HELPER (Raw string only) ----------- */
+        function toBase64Raw(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    // reader.result returns format: "data:image/jpeg;base64,/9j/4AAQ..."
+                    // We need to split and get the second part
+                    const result = reader.result;
+                    const base64Param = result.split(',')[1];
+                    resolve(base64Param);
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+    </script>
+    <script src="auth.js"></script>
+</body>
+</html>

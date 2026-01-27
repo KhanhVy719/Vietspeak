@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài Tập & Nộp Bài - VietSpeak Academy</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <header>
+        <a href="index.html" class="logo">VietSpeak</a>
+        <nav>
+            <a href="index.html">Trang chủ</a>
+            <a href="courses.html">Khoá học</a>
+            <a href="ai.html">AI Phân Tích</a>
+            <a href="thu-vien.html">Thư viện tài liệu</a>
+            <a href="account.html">Tài khoản</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <h1 class="page-title">📝 Bài Tập & Nộp Bài</h1>
+
+        <!-- Filter Tabs -->
+        <div class="tabs-container">
+            <button class="tab-btn active" onclick="filterAssignments('pending')" id="tab-pending">
+                Cần làm <span id="count-pending" class="badge"></span>
+            </button>
+            <button class="tab-btn" onclick="filterAssignments('submitted')" id="tab-submitted">
+                Đã nộp/Đã chấm
+            </button>
+        </div>
+
+        <!-- Assignments List Container -->
+        <div id="assignments-list" class="assignment-list">
+            <div class="empty-state">
+                <i>⏳</i>
+                <p>Đang tải danh sách bài tập...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Submit Modal -->
+    <div id="submitModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <h2 style="margin-bottom: 20px; color: var(--primary);">Nộp Bài Tập</h2>
+            <p id="modalTaskTitle" style="margin-bottom: 20px; font-weight: 500; color: #666;"></p>
+            
+            <form id="submissionForm" onsubmit="handleSubmission(event)">
+                <input type="hidden" id="assignmentId" name="assignment_id">
+                
+                <div class="form-group">
+                    <label>Tải lên File/Video</label>
+                    <div class="file-upload-wrapper" onclick="document.getElementById('fileInput').click()">
+                        <p id="fileNameDisplay">📁 Nhấn để chọn file (PDF, PPTX, MP4...)</p>
+                        <input type="file" id="fileInput" name="file" required style="display: none" onchange="updateFileName(this)">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Ghi chú (Tùy chọn)</label>
+                    <textarea class="form-control" name="note" rows="3" placeholder="Lời nhắn cho giảng viên..."></textarea>
+                </div>
+
+                <button type="submit" class="btn-submit" style="width: 100%; justify-content: center;">
+                    🚀 Gửi Bài Ngay
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="auth.js"></script>
+    <script src="baitap.js"></script>
+
+</body>
+</html>

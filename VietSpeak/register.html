@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng ký - VietSpeak Academy</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Standalone Register Styles Overrides */
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #fff;
+        }
+        
+        header, footer {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="split-screen-container">
+        <!-- Left Side: Image & Branding -->
+        <div class="split-left">
+            <div class="brand-overlay">
+                <a href="index.html" class="login-logo">VietSpeak</a>
+                <div class="brand-text">
+                    <h1>Khởi Đầu<br>Hành Trình Mới</h1>
+                    <p>Tham gia cộng đồng học viên VietSpeak và chinh phục kỹ năng thuyết trình đỉnh cao.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side: Register Form -->
+        <div class="split-right">
+            <div class="login-wrapper">
+                <div class="form-header">
+                    <h2>Tạo tài khoản mới</h2>
+                    <p>Điền thông tin để đăng ký thành viên</p>
+                </div>
+
+                <form id="registerForm" onsubmit="return handleRegister(event)">
+                    <div class="input-group">
+                        <label for="name">Họ và tên</label>
+                        <div class="input-field">
+                            <span class="icon">👤</span>
+                            <input type="text" id="name" name="name" required placeholder="Nguyễn Văn A">
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="email">Email</label>
+                        <div class="input-field">
+                            <span class="icon">✉️</span>
+                            <input type="email" id="email" name="email" required placeholder="student@school.com">
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="password">Mật khẩu</label>
+                        <div class="input-field">
+                            <span class="icon">🔒</span>
+                            <input type="password" id="password" name="password" required placeholder="Tối thiểu 8 ký tự">
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="password_confirmation">Xác nhận mật khẩu</label>
+                        <div class="input-field">
+                            <span class="icon">✅</span>
+                            <input type="password" id="password_confirmation" name="password_confirmation" required placeholder="Nhập lại mật khẩu">
+                        </div>
+                    </div>
+
+                    <div id="errorMessage" class="error-message"></div>
+                    
+                    <button type="submit" class="login-btn-large" id="registerBtn">Đăng Ký Ngay</button>
+                </form>
+
+                <div class="login-footer">
+                    <p>Đã có tài khoản? <a href="login.html">Đăng nhập ngay</a></p>
+                    <a href="index.html" class="back-home">← Quay lại trang chủ</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="auth.js"></script>
+</body>
+</html>
