@@ -60,9 +60,19 @@ echo "Email:    $SSL_EMAIL"
 echo ""
 read -p "❓ Bạn có muốn chạy server ngay bây giờ không? (y/n): " RUN_NOW
 
+# Check for Docker Compose command
+if docker compose version >/dev/null 2>&1; then
+    DOCKER_COMPOSE_CMD="docker compose"
+elif command -v docker-compose >/dev/null 2>&1; then
+    DOCKER_COMPOSE_CMD="docker-compose"
+else
+    echo "❌ Không tìm thấy Docker Compose! Vui lòng cài đặt trước."
+    exit 1
+fi
+
 if [ "$RUN_NOW" = "y" ] || [ "$RUN_NOW" = "Y" ]; then
   echo "🚀 Đang khởi động hệ thống..."
-  docker-compose -f docker-compose.prod.yml --env-file .env.prod up -d --build
+  $DOCKER_COMPOSE_CMD -f docker-compose.prod.yml --env-file .env.prod up -d --build
   
   echo "⏳ Đang đợi Database và Server khởi động (10s)..."
   sleep 10
@@ -80,5 +90,5 @@ if [ "$RUN_NOW" = "y" ] || [ "$RUN_NOW" = "Y" ]; then
 else
   echo ""
   echo "👉 Khi nào muốn chạy, hãy gõ lệnh:"
-  echo "   docker-compose -f docker-compose.prod.yml --env-file .env.prod up -d --build"
+  echo "   $DOCKER_COMPOSE_CMD -f docker-compose.prod.yml --env-file .env.prod up -d --build"
 fi
