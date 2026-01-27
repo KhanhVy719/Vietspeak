@@ -122,6 +122,11 @@ if [ "$RUN_NOW" = "y" ] || [ "$RUN_NOW" = "Y" ]; then
   sleep 15
 
   echo "🛠️ Đang chạy các lệnh thiết lập cuối cùng..."
+  
+  # Fix missing vendor folder due to volume mount
+  echo "📦 Đang cài đặt Dependencies (Vendor)..."
+  docker exec laravel_app composer install --no-interaction --optimize-autoloader
+
   docker exec laravel_app php artisan storage:link
   docker exec laravel_app php artisan migrate --force
   docker exec laravel_app php artisan config:cache
