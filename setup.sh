@@ -1,0 +1,72 @@
+#!/bin/bash
+
+# setup.sh - Auto Configure Domain & SSL for VietSpeak
+
+echo "============================================="
+echo "   VIETSPEAK VPS SETUP ASSISTANT 🚀"
+echo "============================================="
+echo ""
+
+# 1. Ask for Domain
+read -p "👉 Nhập tên miền của bạn (ví dụ: vietspeak.com): " DOMAIN_NAME
+if [ -z "$DOMAIN_NAME" ]; then
+  echo "❌ Tên miền không được để trống!"
+  exit 1
+fi
+
+# 2. Ask for Email
+read -p "👉 Nhập Email để đăng ký SSL (ví dụ: admin@gmail.com): " SSL_EMAIL
+if [ -z "$SSL_EMAIL" ]; then
+  echo "❌ Email không được để trống!"
+  exit 1
+fi
+
+echo ""
+echo "🔄 Đang cập nhật cấu hình cho Domain: $DOMAIN_NAME..."
+
+# 3. Create .env file for Docker Compose to use
+# We use an .env file so docker-compose can substitute variables easily
+cat > .env.prod <<EOF
+# Production Settings
+DOMAIN_NAME=$DOMAIN_NAME
+SSL_EMAIL=$SSL_EMAIL
+EOF
+
+echo "✅ Đã tạo file cấu hình môi trường (.env.prod)"
+
+# 4. Update Laravel .env
+echo "🔄 Đang cập nhật cấu hình Backend Laravel..."
+LARAVEL_ENV="presentation-management/.env"
+
+if [ -f "$LARAVEL_ENV" ]; then
+  # Backup logic could be here, but user wants 'instant setup'
+  # We use sed to replace lines. The delimiter is | to avoid conflicts with urls
+  sed -i "s|APP_URL=.*|APP_URL=https://$DOMAIN_NAME|g" "$LARAVEL_ENV"
+  sed -i "s|APP_ENV=.*|APP_ENV=production|g" "$LARAVEL_ENV"
+  sed -i "s|APP_DEBUG=.*|APP_DEBUG=false|g" "$LARAVEL_ENV"
+  
+  echo "✅ Đã cập nhật APP_URL, APP_ENV, APP_DEBUG trong Laravel."
+else
+  echo "⚠️ Không tìm thấy file $LARAVEL_ENV, bỏ qua bước này."
+fi
+
+# 5. Confirm and Run
+echo ""
+echo "============================================="
+echo "   CẤU HÌNH HOÀN TẤT!"
+echo "============================================="
+echo "Tên miền: $DOMAIN_NAME"
+echo "Email:    $SSL_EMAIL"
+echo ""
+read -p "❓ Bạn có muốn chạy server ngay bây giờ không? (y/n): " RUN_NOW
+
+if [ "$RUN_NOW" = "y" ] || [ "$RUN_NOW" = "Y" ]; then
+  echo "🚀 Đang khởi động hệ thống..."
+  docker-compose -f docker-compose.prod.yml --env-file .env.prod up -d --build
+  echo ""
+  echo "🎉 XONG! Truy cập ngay: https://$DOMAIN_NAME/vietspeak"
+else
+  echo ""
+  echo "👉 Khi nào muốn chạy, hãy gõ lệnh:"
+  echo "   docker-compose -f docker-compose.prod.yml --env-file .env.prod up -d --build"
+fi
