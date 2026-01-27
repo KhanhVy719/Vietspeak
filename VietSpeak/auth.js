@@ -1,5 +1,13 @@
 // API Base URL - Laravel backend
 const API_URL = (typeof CONFIG !== 'undefined' && CONFIG.API_URL) ? CONFIG.API_URL : '/api';
+const LMS_URL = API_URL.replace('/api', '') + '/login';
+
+document.addEventListener('DOMContentLoaded', () => {
+    const lmsLink = document.getElementById('lmsLoginLink');
+    if (lmsLink) {
+        lmsLink.href = LMS_URL;
+    }
+});
 
 // Handle login form submission
 async function handleLogin(event) {
