@@ -141,6 +141,13 @@ if [ -f "$LARAVEL_ENV" ]; then
   sed -i "s|APP_ENV=.*|APP_ENV=production|g" "$LARAVEL_ENV"
   sed -i "s|APP_DEBUG=.*|APP_DEBUG=false|g" "$LARAVEL_ENV"
   
+  # Update Database Connection (Docker Internal Network)
+  sed -i "s|DB_HOST=.*|DB_HOST=db|g" "$LARAVEL_ENV"
+  sed -i "s|DB_PORT=.*|DB_PORT=5432|g" "$LARAVEL_ENV"
+  sed -i "s|DB_DATABASE=.*|DB_DATABASE=presentation_management|g" "$LARAVEL_ENV"
+  sed -i "s|DB_USERNAME=.*|DB_USERNAME=postgres|g" "$LARAVEL_ENV"
+  sed -i "s|DB_PASSWORD=.*|DB_PASSWORD=password|g" "$LARAVEL_ENV"
+
   echo "✅ Đã cập nhật APP_URL thành: https://$BACKEND_DOMAIN"
 else
   echo "⚠️ Không tìm thấy file $LARAVEL_ENV, bỏ qua bước này."
