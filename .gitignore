@@ -8,7 +8,7 @@ node_modules/
 vendor/
 
 # Environment
-.env
+# .env (Included for private backup)
 .env.backup
 .env.production
 .phpunit.result.cache
@@ -22,7 +22,7 @@ vendor/
 # Project specific (Laravel)
 presentation-management/vendor/
 presentation-management/node_modules/
-presentation-management/.env
+# presentation-management/.env (Included for private backup)
 presentation-management/storage/*.key
 presentation-management/storage/logs/*.log
 presentation-management/storage/framework/views/*.php
