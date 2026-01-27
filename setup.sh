@@ -132,8 +132,9 @@ echo "✅ Đã cập nhật VietSpeak/config.js"
 
 # 3.3 Update LMS Login Link in login.html
 echo "🔄 Đang cập nhật link LMS trong login.html..."
-sed -i "s|href=\"https://[^\"]*login\"|href=\"https://$BACKEND_DOMAIN/login\"|g" VietSpeak/login.html
+sed -i "s|__BACKEND_DOMAIN__|$BACKEND_DOMAIN|g" VietSpeak/login.html
 echo "✅ Đã cập nhật VietSpeak/login.html"
+
 
 
 # 4. Update Laravel .env
