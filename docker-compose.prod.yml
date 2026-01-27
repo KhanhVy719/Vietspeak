@@ -5,6 +5,8 @@ services:
   nginx-proxy:
     image: jwilder/nginx-proxy
     container_name: nginx-proxy
+    labels:
+      - "com.github.nginx-proxy.nginx"
     ports:
       - "80:80"
       - "443:443"
