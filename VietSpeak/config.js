@@ -1,6 +1,6 @@
 const CONFIG = {
-    API_URL: 'http://presentation-management.test/api',
-    DEBUG: true
+    API_URL: '/api',
+    DEBUG: false
 };
 
 // Global fallback if needed (though auth.js defines its own)
