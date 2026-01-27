@@ -48,6 +48,7 @@ services:
     environment:
       - VIRTUAL_HOST=${DOMAINS}
       - LETSENCRYPT_HOST=${DOMAINS}
+      - LETSENCRYPT_EMAIL=${SSL_EMAIL}
     depends_on:
       - app
     networks:
