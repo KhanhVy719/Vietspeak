@@ -1,9 +1,23 @@
 # 🚀 Hướng dẫn Triển khai lên VPS (Có Tên Miền + SSL Tự Động)
 
-## 1. Chuẩn bị
+## 1. Chuẩn bị Môi trường (Cho VPS mới tinh - Ubuntu)
 
-- Một VPS (Ubuntu/CentOS) đã cài **Docker** và **Docker Compose**.
-- Một tên miền (ví dụ: `vietspeak.com`) đã trỏ về IP của VPS.
+Copy và chạy toàn bộ lệnh sau để cài Docker & Git:
+
+```bash
+# Cập nhật hệ thống
+sudo apt update && sudo apt upgrade -y
+
+# Cài Git và Curl
+sudo apt install -y git curl
+
+# Cài Docker tự động
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+
+# Cài Docker Compose (Nếu chưa có)
+sudo apt install -y docker-compose-plugin
+```
 
 ## 2. Cài đặt Nhanh (Khuyên dùng)
 
