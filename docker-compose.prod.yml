@@ -65,26 +65,12 @@ services:
     networks:
       - app-network
 
-  db:
-    image: postgres:15-alpine
-    container_name: postgres_db
-    restart: unless-stopped
-    environment:
-      POSTGRES_DB: presentation_management
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-    volumes:
-      - db_data:/var/lib/postgresql/data
-    networks:
-      - app-network
-
 volumes:
   certs:
   html:
   vhost:
   dhparam:
   acme:
-  db_data:
 
 networks:
   app-network:
