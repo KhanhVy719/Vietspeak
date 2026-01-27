@@ -63,8 +63,20 @@ read -p "❓ Bạn có muốn chạy server ngay bây giờ không? (y/n): " RUN
 if [ "$RUN_NOW" = "y" ] || [ "$RUN_NOW" = "Y" ]; then
   echo "🚀 Đang khởi động hệ thống..."
   docker-compose -f docker-compose.prod.yml --env-file .env.prod up -d --build
+  
+  echo "⏳ Đang đợi Database và Server khởi động (10s)..."
+  sleep 10
+
+  echo "🛠️ Đang chạy các lệnh thiết lập cuối cùng..."
+  docker exec laravel_app php artisan storage:link
+  docker exec laravel_app php artisan migrate --force
+  docker exec laravel_app php artisan config:cache
+  docker exec laravel_app php artisan route:cache
+  docker exec laravel_app php artisan view:cache
+  
   echo ""
-  echo "🎉 XONG! Truy cập ngay: https://$DOMAIN_NAME/vietspeak"
+  echo "✅ Tối ưu hóa xong! Web đã sẵn sàng."
+  echo "🎉 TRUY CẬP NGAY: https://$DOMAIN_NAME/vietspeak"
 else
   echo ""
   echo "👉 Khi nào muốn chạy, hãy gõ lệnh:"
