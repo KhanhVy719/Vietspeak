@@ -135,6 +135,11 @@ echo "✅ Đã cập nhật VietSpeak/config.js"
 echo "🔄 Đang cập nhật cấu hình Backend Laravel..."
 LARAVEL_ENV="presentation-management/.env"
 
+if [ ! -f "$LARAVEL_ENV" ]; then
+  echo "⚠️ Không tìm thấy file $LARAVEL_ENV > Đang tạo mới từ .env.example..."
+  cp "presentation-management/.env.example" "$LARAVEL_ENV"
+fi
+
 if [ -f "$LARAVEL_ENV" ]; then
   # Use | delimiter for sed to handle URLs
   sed -i "s|APP_URL=.*|APP_URL=https://$BACKEND_DOMAIN|g" "$LARAVEL_ENV"
@@ -150,7 +155,8 @@ if [ -f "$LARAVEL_ENV" ]; then
 
   echo "✅ Đã cập nhật APP_URL thành: https://$BACKEND_DOMAIN"
 else
-  echo "⚠️ Không tìm thấy file $LARAVEL_ENV, bỏ qua bước này."
+  echo "❌ LỖI: Không thể tạo file .env! Vui lòng kiểm tra lại."
+  exit 1
 fi
 
 # 5. Confirm and Run
@@ -210,8 +216,12 @@ if [ "$RUN_NOW" = "y" ] || [ "$RUN_NOW" = "Y" ]; then
   docker exec laravel_app bash -c "mkdir -p storage/framework/{sessions,views,cache} storage/logs"
   docker exec laravel_app chmod -R 777 storage bootstrap/cache
 
+  docker exec laravel_app chmod -R 777 storage bootstrap/cache
+
+  docker exec laravel_app php artisan key:generate --force
   docker exec laravel_app php artisan storage:link
   docker exec laravel_app php artisan migrate --force
+  docker exec laravel_app php artisan config:clear
   docker exec laravel_app php artisan config:cache
   docker exec laravel_app php artisan route:cache
   
