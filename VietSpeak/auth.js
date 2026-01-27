@@ -1,5 +1,5 @@
 // API Base URL - Laravel backend
-const API_URL = 'http://presentation-management.test/api';
+const API_URL = (typeof CONFIG !== 'undefined' && CONFIG.API_URL) ? CONFIG.API_URL : '/api';
 
 // Handle login form submission
 async function handleLogin(event) {
@@ -265,7 +265,6 @@ function updateNavigation() {
                 avatarHtml = `<div class="nav-avatar">${user.name.charAt(0).toUpperCase()}</div>`;
             }
 
-            userLink.innerHTML = `
                 <div style="background: rgba(39, 174, 96, 0.1); color: #27ae60; padding: 4px 10px; border-radius: 20px; font-weight: bold; font-size: 0.85rem; border: 1px solid rgba(39, 174, 96, 0.2);">
                     ${formattedBalance}
                 </div>
