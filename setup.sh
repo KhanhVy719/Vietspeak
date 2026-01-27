@@ -147,6 +147,7 @@ if [ -f "$LARAVEL_ENV" ]; then
   sed -i "s|APP_DEBUG=.*|APP_DEBUG=false|g" "$LARAVEL_ENV"
   
   # Update Database Connection (Docker Internal Network)
+  sed -i "s|DB_CONNECTION=.*|DB_CONNECTION=pgsql|g" "$LARAVEL_ENV"
   sed -i "s|DB_HOST=.*|DB_HOST=db|g" "$LARAVEL_ENV"
   sed -i "s|DB_PORT=.*|DB_PORT=5432|g" "$LARAVEL_ENV"
   sed -i "s|DB_DATABASE=.*|DB_DATABASE=presentation_management|g" "$LARAVEL_ENV"
