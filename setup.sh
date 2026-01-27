@@ -109,7 +109,7 @@ server {
     index index.html;
 
     location / {
-        try_files \$uri \$uri/ =404;
+        try_files $uri $uri.html $uri/ =404;
     }
 
     # Optional: Redirect /api calls to backend if needed (but we use CORS now)
