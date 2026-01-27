@@ -1,20 +1,31 @@
 #!/bin/bash
 
-# setup.sh - Auto Configure Domain & SSL for VietSpeak
+# setup.sh - Auto Configure Domain & SSL for VietSpeak (Dual Domain Support)
 
 echo "============================================="
 echo "   VIETSPEAK VPS SETUP ASSISTANT 🚀"
 echo "============================================="
 echo ""
 
-# 1. Ask for Domain
-read -p "👉 Nhập tên miền của bạn (ví dụ: vietspeak.com): " DOMAIN_NAME
-if [ -z "$DOMAIN_NAME" ]; then
-  echo "❌ Tên miền không được để trống!"
+# 1. Ask for Domains
+echo "👉 CẤU HÌNH TÊN MIỀN RIÊNG BIỆT:"
+echo "---------------------------------"
+
+# 1.1 Backend Domain (Admin + API)
+read -p "1. Nhập tên miền cho ADMIN/API (VD: api.vietspeak.com): " BACKEND_DOMAIN
+if [ -z "$BACKEND_DOMAIN" ]; then
+  echo "❌ Tên miền Admin không được để trống!"
   exit 1
 fi
 
-# 1.1 Check & Install Docker (Auto)
+# 1.2 Frontend Domain (Student Portal)
+read -p "2. Nhập tên miền cho HỌC VIÊN (VD: vietspeak.com): " FRONTEND_DOMAIN
+if [ -z "$FRONTEND_DOMAIN" ]; then
+  echo "❌ Tên miền Học viên không được để trống!"
+  exit 1
+fi
+
+# 1.3 Check & Install Docker (Auto)
 if ! command -v docker &> /dev/null; then
     echo ""
     echo "📦 KHÔNG TÌM THẤY DOCKER! ĐANG TỰ ĐỘNG CÀI ĐẶT..."
@@ -48,30 +59,89 @@ if [ -z "$SSL_EMAIL" ]; then
 fi
 
 echo ""
-echo "🔄 Đang cập nhật cấu hình cho Domain: $DOMAIN_NAME..."
+echo "🔄 Đang cập nhật cấu hình cho 2 Domain:"
+echo "   - Backend: $BACKEND_DOMAIN"
+echo "   - Frontend: $FRONTEND_DOMAIN"
 
 # 3. Create .env file for Docker Compose to use
-# We use an .env file so docker-compose can substitute variables easily
+# We use a comma-separated list for VIRTUAL_HOST to support multiple domains
 cat > .env.prod <<EOF
 # Production Settings
-DOMAIN_NAME=$DOMAIN_NAME
+DOMAINS=$BACKEND_DOMAIN,$FRONTEND_DOMAIN
 SSL_EMAIL=$SSL_EMAIL
 EOF
 
 echo "✅ Đã tạo file cấu hình môi trường (.env.prod)"
+
+# 3.1 Generate Nginx Config Dynamically
+echo "🔄 Đang tạo cấu hình Nginx (docker/nginx/default.prod.conf)..."
+cat > docker/nginx/default.prod.conf <<EOF
+# SERVER 1: BACKEND (Laravel Admin + API)
+server {
+    listen 80;
+    server_name $BACKEND_DOMAIN;
+    root /var/www/html/public;
+    index index.php index.html;
+
+    client_max_body_size 100M;
+
+    location / {
+        try_files \$uri \$uri/ /index.php?\$query_string;
+        gzip_static on;
+    }
+
+    location ~ \.php$ {
+        try_files \$uri =404;
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        fastcgi_pass app:9000;
+        fastcgi_index index.php;
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
+        fastcgi_param PATH_INFO \$fastcgi_path_info;
+    }
+}
+
+# SERVER 2: FRONTEND (VietSpeak Student Portal)
+server {
+    listen 80;
+    server_name $FRONTEND_DOMAIN;
+    root /var/www/vietspeak;
+    index index.html;
+
+    location / {
+        try_files \$uri \$uri/ =404;
+    }
+
+    # Optional: Redirect /api calls to backend if needed (but we use CORS now)
+    # location /api {
+    #    return 301 https://$BACKEND_DOMAIN\$request_uri;
+    # }
+}
+EOF
+echo "✅ Đã tạo cấu hình Nginx riêng biệt cho 2 tên miền."
+
+# 3.2 Update Frontend Config (config.js) to point to Backend Domain
+echo "🔄 Đang cập nhật kết nối Frontend -> Backend..."
+cat > VietSpeak/config.js <<EOF
+const CONFIG = {
+    API_URL: 'https://$BACKEND_DOMAIN/api',
+    DEBUG: false
+};
+EOF
+echo "✅ Đã cập nhật VietSpeak/config.js"
+
 
 # 4. Update Laravel .env
 echo "🔄 Đang cập nhật cấu hình Backend Laravel..."
 LARAVEL_ENV="presentation-management/.env"
 
 if [ -f "$LARAVEL_ENV" ]; then
-  # Backup logic could be here, but user wants 'instant setup'
-  # We use sed to replace lines. The delimiter is | to avoid conflicts with urls
-  sed -i "s|APP_URL=.*|APP_URL=https://$DOMAIN_NAME|g" "$LARAVEL_ENV"
+  # Use | delimiter for sed to handle URLs
+  sed -i "s|APP_URL=.*|APP_URL=https://$BACKEND_DOMAIN|g" "$LARAVEL_ENV"
   sed -i "s|APP_ENV=.*|APP_ENV=production|g" "$LARAVEL_ENV"
   sed -i "s|APP_DEBUG=.*|APP_DEBUG=false|g" "$LARAVEL_ENV"
   
-  echo "✅ Đã cập nhật APP_URL, APP_ENV, APP_DEBUG trong Laravel."
+  echo "✅ Đã cập nhật APP_URL thành: https://$BACKEND_DOMAIN"
 else
   echo "⚠️ Không tìm thấy file $LARAVEL_ENV, bỏ qua bước này."
 fi
@@ -81,8 +151,9 @@ echo ""
 echo "============================================="
 echo "   CẤU HÌNH HOÀN TẤT!"
 echo "============================================="
-echo "Tên miền: $DOMAIN_NAME"
-echo "Email:    $SSL_EMAIL"
+echo "Frontend (Student): https://$FRONTEND_DOMAIN"
+echo "Backend (Admin):    https://$BACKEND_DOMAIN"
+echo "SSL Email:          $SSL_EMAIL"
 echo ""
 read -p "❓ Bạn có muốn chạy server ngay bây giờ không? (y/n): " RUN_NOW
 
@@ -142,7 +213,8 @@ if [ "$RUN_NOW" = "y" ] || [ "$RUN_NOW" = "Y" ]; then
   
   echo ""
   echo "✅ Tối ưu hóa xong! Web đã sẵn sàng."
-  echo "🎉 TRUY CẬP NGAY: https://$DOMAIN_NAME/vietspeak"
+  echo "🎉 TRUY CẬP HỌC VIÊN: https://$FRONTEND_DOMAIN"
+  echo "🔧 TRUY CẬP ADMIN:    https://$BACKEND_DOMAIN/login"
 else
   echo ""
   echo "👉 Khi nào muốn chạy, hãy gõ lệnh:"
