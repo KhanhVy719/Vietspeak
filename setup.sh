@@ -127,11 +127,18 @@ if [ "$RUN_NOW" = "y" ] || [ "$RUN_NOW" = "Y" ]; then
   echo "📦 Đang cài đặt Dependencies (Vendor)..."
   docker exec laravel_app composer install --no-interaction --optimize-autoloader
 
+  # Ensure storage directories exist and are writable
+  echo "🔧 Đang sửa quyền thư mục (Permissions)..."
+  docker exec laravel_app bash -c "mkdir -p storage/framework/{sessions,views,cache} storage/logs"
+  docker exec laravel_app chmod -R 777 storage bootstrap/cache
+
   docker exec laravel_app php artisan storage:link
   docker exec laravel_app php artisan migrate --force
   docker exec laravel_app php artisan config:cache
   docker exec laravel_app php artisan route:cache
-  docker exec laravel_app php artisan view:cache
+  
+  # Only run view:cache if config is loaded
+  docker exec laravel_app php artisan view:cache || echo "⚠️ Không thể cache view, nhưng web vẫn sẽ chạy ổn."
   
   echo ""
   echo "✅ Tối ưu hóa xong! Web đã sẵn sàng."
