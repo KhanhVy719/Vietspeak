@@ -715,6 +715,8 @@ nav a:hover, nav a.active {
     writing-mode: vertical-lr; /* Vertical text when collapsed */
     transform: rotate(180deg);
     transition: var(--transition);
+    word-break: keep-all; /* Prevent breaking Vietnamese words */
+    overflow-wrap: normal;
 }
 
 .course-card.active h2 {
@@ -723,6 +725,10 @@ nav a:hover, nav a.active {
     font-size: 2.2rem;
     color: var(--primary);
     margin-bottom: 15px;
+    white-space: normal; /* Allow wrapping when active */
+    word-break: keep-all; /* Don't break words */
+    overflow-wrap: break-word; /* Break at word boundaries only */
+    hyphens: none; /* No hyphenation */
 }
 
 .course-details {
@@ -800,8 +806,20 @@ nav a:hover, nav a.active {
 @media (max-width: 992px) {
     .courses-wrapper { flex-direction: column; height: auto; }
     .course-card { min-height: 120px; flex: none; width: 100%; }
-    .course-card h2 { writing-mode: horizontal-tb; transform: rotate(0); font-size: 1.5rem; }
+    .course-card h2 { 
+        writing-mode: horizontal-tb; 
+        transform: rotate(0); 
+        font-size: 1.5rem;
+        word-break: keep-all;
+        overflow-wrap: break-word;
+    }
     .course-card.active { min-height: auto; flex: none; padding: 20px; }
+    .course-card.active h2 {
+        font-size: 1.8rem; /* Slightly smaller on mobile */
+        word-break: keep-all; /* Don't break Vietnamese words */
+        overflow-wrap: break-word;
+        line-height: 1.3;
+    }
     
     /* Make active card expand properly on mobile */
     .course-card.active .course-details {
@@ -811,7 +829,7 @@ nav a:hover, nav a.active {
     /* Mobile price adjustment */
     .course-card.active .price {
         font-size: 1.8rem;
-        word-break: break-word;
+        word-break: keep-all;
     }
     
     /* Mobile description adjustment */
