@@ -16,6 +16,7 @@ services:
       - vhost:/etc/nginx/vhost.d
       - certs:/etc/nginx/certs:ro
       - /var/run/docker.sock:/tmp/docker.sock:ro
+      - ./docker/nginx/proxy_custom.conf:/etc/nginx/conf.d/custom_upload.conf:ro
     networks:
       - app-network
 
