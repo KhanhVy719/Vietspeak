@@ -33,7 +33,7 @@ class TeamMemberController extends Controller
         ]);
 
         // Handle checkbox - if not present, set to false
-        $validated['is_active'] = $request->has('is_active') ? 1 : 0;
+        $validated['is_active'] = $request->has('is_active') ? true : false;
 
         // Handle avatar upload
         if ($request->hasFile('avatar')) {
@@ -64,7 +64,7 @@ class TeamMemberController extends Controller
         ]);
 
         // Handle checkbox - if not present, set to false (0)
-        $validated['is_active'] = $request->has('is_active') ? 1 : 0;
+        $validated['is_active'] = $request->has('is_active') ? true : false;
 
         // Handle new avatar upload
         if ($request->hasFile('avatar')) {

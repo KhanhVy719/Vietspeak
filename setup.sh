@@ -140,6 +140,11 @@ echo "🔄 Đang cập nhật link LMS trong login.html..."
 sed -i "s|__BACKEND_DOMAIN__|$BACKEND_DOMAIN|g" VietSpeak/login.html
 echo "✅ Đã cập nhật VietSpeak/login.html"
 
+# 3.4 Update API URL in team.js
+echo "🔄 Đang cập nhật API URL trong team.js..."
+sed -i "s|__BACKEND_DOMAIN__|$BACKEND_DOMAIN|g" VietSpeak/team.js
+echo "✅ Đã cập nhật VietSpeak/team.js"
+
 
 
 # 4. Update Laravel .env
