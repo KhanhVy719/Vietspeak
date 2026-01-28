@@ -218,9 +218,13 @@ if [ "$RUN_NOW" = "y" ] || [ "$RUN_NOW" = "Y" ]; then
   # Ensure storage directories exist and are writable
   echo "🔧 Đang sửa quyền thư mục (Permissions)..."
   docker exec laravel_app bash -c "mkdir -p storage/framework/{sessions,views,cache} storage/logs"
-  docker exec laravel_app chmod -R 777 storage bootstrap/cache
-
-  docker exec laravel_app chmod -R 777 storage bootstrap/cache
+  
+  # Set correct ownership (www-data) and permissions
+  docker exec laravel_app chown -R www-data:www-data storage bootstrap/cache
+  docker exec laravel_app chmod -R 775 storage bootstrap/cache
+  
+  # Remove any old log files with wrong permissions
+  docker exec laravel_app rm -f storage/logs/laravel.log
 
   docker exec laravel_app php artisan key:generate --force
   docker exec laravel_app php artisan storage:link
