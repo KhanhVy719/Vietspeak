@@ -30,6 +30,10 @@ docker exec laravel_app php artisan config:cache
 docker exec laravel_app php artisan route:cache
 docker exec laravel_app php artisan view:cache
 
+# 6. Restart Container (Force Code Update)
+echo "🔄  Restarting Laravel container..."
+docker restart laravel_app
+
 echo ""
 echo "=========================================="
 echo "✅  UPDATE COMPLETE!"
