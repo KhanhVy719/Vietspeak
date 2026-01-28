@@ -30,6 +30,13 @@ COPY . /var/www/html
 # Install dependencies
 RUN composer install --no-interaction --optimize-autoloader --no-dev
 
+# Configure PHP for large file uploads and long processing
+RUN echo "upload_max_filesize = 500M" > /usr/local/etc/php/conf.d/uploads.ini \
+    && echo "post_max_size = 500M" >> /usr/local/etc/php/conf.d/uploads.ini \
+    && echo "max_execution_time = 300" >> /usr/local/etc/php/conf.d/uploads.ini \
+    && echo "max_input_time = 300" >> /usr/local/etc/php/conf.d/uploads.ini \
+    && echo "memory_limit = 512M" >> /usr/local/etc/php/conf.d/uploads.ini
+
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
