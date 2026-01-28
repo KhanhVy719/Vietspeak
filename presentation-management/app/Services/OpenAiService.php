@@ -167,7 +167,8 @@ class OpenAiService
             }
 
             // --- Phase 2: Visual Analysis (Frame Extraction) ---
-            $frames = $this->extractVideoFrames($videoPath, 4); // Extract 4 keyframes
+            // Extract fewer frames (3) and they will be resized to reduce token usage
+            $frames = $this->extractVideoFrames($videoPath, 3);
 
             if (empty($frames)) {
                 return ['error' => 'Không thể extract frames từ video'];
@@ -193,7 +194,8 @@ class OpenAiService
                 $content[] = [
                     'type' => 'image_url',
                     'image_url' => [
-                        'url' => "data:image/jpeg;base64,{$frameBase64}"
+                        'url' => "data:image/jpeg;base64,{$frameBase64}",
+                        'detail' => 'low' // Use 'low' detail to reduce tokens and avoid rejection
                     ]
                 ];
             }
@@ -202,7 +204,7 @@ class OpenAiService
                 ['role' => 'user', 'content' => $content]
             ];
 
-            return $this->chat($messages);
+            return $this->chat($messages, 3000); // Increase max_tokens for detailed video analysis
 
         } catch (\Exception $e) {
             Log::error('OpenAI Video Analysis Error: ' . $e->getMessage());
@@ -290,7 +292,9 @@ class OpenAiService
             // Simple: just dump frames at 1fps and take first 4? No.
             // Using logic: fps=1/2 means 1 frame every 2 sec.
             
-            $command = "ffmpeg -i \"{$videoPath}\" -vf \"fps=1/2\" -frames:v {$numFrames} \"{$outputDir}/frame_%03d.jpg\" 2>&1";
+            // Extract frames at lower resolution to reduce base64 size
+            // scale=640:-1 means width=640px, height=auto (maintain aspect ratio)
+            $command = "ffmpeg -i \"{$videoPath}\" -vf \"fps=1/3,scale=640:-1\" -frames:v {$numFrames} -q:v 5 \"{$outputDir}/frame_%03d.jpg\" 2>&1";
             exec($command, $output, $returnCode);
 
             if ($returnCode !== 0) {
@@ -318,7 +322,7 @@ class OpenAiService
     /**
      * General chat completion
      */
-    public function chat($messages)
+    public function chat($messages, $maxTokens = 2000)
     {
         try {
             $response = Http::withHeaders([
@@ -327,7 +331,7 @@ class OpenAiService
             ])->post("{$this->baseUrl}/chat/completions", [
                 'model' => $this->model,
                 'messages' => $messages,
-                'max_tokens' => 2000,
+                'max_tokens' => $maxTokens,
                 'temperature' => 0.7
             ]);
 
