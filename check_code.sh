@@ -1,0 +1,14 @@
+#!/bin/bash
+echo "========================================"
+echo "🔍 CHECKING CODE ON SERVER"
+echo "========================================"
+echo ""
+echo "Checking TeamMemberController.php inside Docker..."
+echo "----------------------------------------"
+docker exec laravel_app grep -n "is_active" app/Http/Controllers/Admin/TeamMemberController.php
+echo "----------------------------------------"
+echo ""
+echo "Expected:"
+echo "   \$validated['is_active'] = \$request->has('is_active') ? true : false;"
+echo ""
+echo "If you see '1 : 0', the code is STILL OLD."
