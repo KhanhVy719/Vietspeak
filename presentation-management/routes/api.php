@@ -43,13 +43,24 @@ Route::middleware(['auth:sanctum', 'role:student'])->prefix('student')->group(fu
     Route::delete('/avatar/delete', [AvatarController::class, 'delete']);
 });
 
-Route::post('/ai/analyze', [App\Http\Controllers\Api\AiController::class, 'analyze'])->middleware('auth:sanctum');
-Route::post('/ai/analyze-video', [App\Http\Controllers\Api\AiController::class, 'analyzeVideo'])->middleware('auth:sanctum');
-Route::post('/ai/analyze-video/', [App\Http\Controllers\Api\AiController::class, 'analyzeVideo'])->middleware('auth:sanctum'); // With trailing slash
+// Authentication routes with rate limiting
+Route::post('/auth/login', [StudentApiAuthController::class, 'login'])
+    ->middleware('throttle:5,1'); // 5 attempts per minute to prevent brute force
+
+Route::post('/auth/register', [StudentApiAuthController::class, 'register'])
+    ->middleware('throttle:3,60'); // 3 registrations per hour to prevent spam
+
+// AI Analysis routes with rate limiting
+Route::post('/ai/analyze', [AiController::class, 'analyze'])
+    ->middleware(['auth:sanctum', 'throttle:10,60']); // 10 analyses per hour
+Route::post('/ai/analyze-video', [AiController::class, 'analyzeVideo'])
+    ->middleware(['auth:sanctum', 'throttle:10,60']); // 10 video analysis per hour (expensive!)
+Route::post('/ai/analyze-video/', [AiController::class, 'analyzeVideo'])
+    ->middleware(['auth:sanctum', 'throttle:10,60']); // With trailing slash
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/payment/create-link', [App\Http\Controllers\Api\PaymentController::class, 'createPaymentLink']);
-    Route::post('/payment/check-transaction', [App\Http\Controllers\Api\PaymentController::class, 'checkTransaction']);
+    Route::post('/payment/create-link', [PaymentController::class, 'createPaymentLink']);
+    Route::post('/payment/check-transaction', [PaymentController::class, 'checkTransaction']);
 });
 
 // Webhook không cần auth sanctum, nhưng cần bảo mật IP hoặc Token (để mở public cho SePay call)

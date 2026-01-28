@@ -22,6 +22,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->api(prepend: [
             \App\Http\Middleware\Cors::class,
         ]);
+        
+        // Add security headers for all requests
+        $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
 
         // Trust all proxies (Nginx Proxy + Cloudflare) to fix Redirect Loops & get correct IP
         $middleware->trustProxies(at: '*');

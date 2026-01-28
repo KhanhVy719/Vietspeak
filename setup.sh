@@ -241,6 +241,14 @@ if [ "$RUN_NOW" = "y" ] || [ "$RUN_NOW" = "Y" ]; then
   # Only run view:cache if config is loaded
   docker exec laravel_app php artisan view:cache || echo "⚠️ Không thể cache view, nhưng web vẫn sẽ chạy ổn."
   
+  # Force production environment settings for security
+  echo "🔒 Đang thiết lập bảo mật production..."
+  docker exec laravel_app sed -i 's/APP_DEBUG=true/APP_DEBUG=false/g' .env
+  docker exec laravel_app sed -i 's/APP_ENV=local/APP_ENV=production/g' .env
+  docker exec laravel_app sed -i 's/LOG_LEVEL=debug/LOG_LEVEL=error/g' .env
+  docker exec laravel_app php artisan config:clear
+  docker exec laravel_app php artisan config:cache
+  
   echo ""
   echo "✅ Tối ưu hóa xong! Web đã sẵn sàng."
   echo "🎉 TRUY CẬP HỌC VIÊN: https://$FRONTEND_DOMAIN"

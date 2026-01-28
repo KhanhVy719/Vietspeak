@@ -37,6 +37,9 @@ RUN echo "upload_max_filesize = 500M" > /usr/local/etc/php/conf.d/uploads.ini \
     && echo "max_input_time = 300" >> /usr/local/etc/php/conf.d/uploads.ini \
     && echo "memory_limit = 512M" >> /usr/local/etc/php/conf.d/uploads.ini
 
+# Security: Hide PHP version
+RUN echo "expose_php = Off" > /usr/local/etc/php/conf.d/security.ini
+
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 

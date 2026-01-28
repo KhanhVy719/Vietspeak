@@ -32,18 +32,18 @@ async function handleLogin(event) {
             body: JSON.stringify({ email, password })
         });
         
-        console.log('Response status:', response.status);
+        logger.log('Response status:', response.status);
         
         const data = await response.json();
-        console.log('Response data:', data);
+        logger.log('Response data:', data);
         
         if (data.success && data.token) {
             // Save token and user info
             localStorage.setItem('vietspeak_token', data.token);
             localStorage.setItem('vietspeak_user', JSON.stringify(data.user));
             
-            console.log('Token saved:', data.token);
-            console.log('User saved:', data.user);
+            logger.log('Token saved (hidden in production)');
+            logger.log('User logged in:', data.user.name);
             
             // Small delay before redirect
             setTimeout(() => {
@@ -167,7 +167,7 @@ async function fetchApi(endpoint, options = {}) {
     const token = localStorage.getItem('vietspeak_token');
     
     if (!token) {
-        console.log('No token found');
+        logger.log('No token found');
         window.location.href = 'login.html';
         return null;
     }
@@ -180,18 +180,18 @@ async function fetchApi(endpoint, options = {}) {
     };
     
     try {
-        console.log(`Fetching: ${API_URL}${endpoint}`);
+        logger.log(`Fetching: ${API_URL}${endpoint}`);
         
         const response = await fetch(`${API_URL}${endpoint}`, {
             ...options,
             headers
         });
         
-        console.log(`Response status for ${endpoint}:`, response.status);
+        logger.log(`Response status for ${endpoint}:`, response.status);
         
         if (response.status === 401) {
             // Token expired or invalid - logout
-            console.log('Unauthorized, logging out...');
+            logger.log('Unauthorized, logging out...');
             logout();
             return null;
         }
@@ -207,7 +207,7 @@ async function fetchApi(endpoint, options = {}) {
         }
         
         const data = await response.json();
-        console.log(`Data from ${endpoint}:`, data);
+        logger.log(`Data from ${endpoint}:`, data);
         return data;
         
     } catch (error) {
@@ -219,20 +219,20 @@ async function fetchApi(endpoint, options = {}) {
 
 // Update Navigation Bar based on login state
 function updateNavigation() {
-    console.log('[updateNavigation] Running...');
+    logger.log('[updateNavigation] Running...');
     const nav = document.querySelector('nav');
     
     if (!nav) {
-        console.log('[updateNavigation] Nav element not found');
+        logger.log('[updateNavigation] Nav element not found');
         return;
     }
 
     if (isLoggedIn()) {
-        console.log('[updateNavigation] User is logged in');
+        logger.log('[updateNavigation] User is logged in');
         const user = getCurrentUser();
         
         if (!user) {
-            console.log('[updateNavigation] User data missing from localStorage');
+            logger.log('[updateNavigation] User data missing from localStorage');
             return;
         }
 
@@ -244,13 +244,13 @@ function updateNavigation() {
             const linkText = link.textContent.trim().toLowerCase();
             if (linkText === 'đăng nhập') {
                 loginLink = link;
-                console.log('[updateNavigation] Found login link:', link.href);
+                logger.log('[updateNavigation] Found login link:', link.href);
                 break;
             }
         }
 
         if (loginLink && user) {
-            console.log('[updateNavigation] Replacing login link with user avatar for:', user.name);
+            logger.log('[updateNavigation] Replacing login link with user avatar for:', user.name);
             
             // Create user profile link
             const userLink = document.createElement('a');
@@ -285,12 +285,12 @@ function updateNavigation() {
             
             // Replace the login link
             nav.replaceChild(userLink, loginLink);
-            console.log('[updateNavigation] Successfully replaced login link with user avatar');
+            logger.log('[updateNavigation] Successfully replaced login link with user avatar');
         } else {
-            console.log('[updateNavigation] Login link not found by text search');
+            logger.log('[updateNavigation] Login link not found by text search');
         }
     } else {
-        console.log('[updateNavigation] User is NOT logged in');
+        logger.log('[updateNavigation] User is NOT logged in');
     }
 }
 

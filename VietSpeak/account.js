@@ -1,15 +1,15 @@
 // Check authentication on page load
 document.addEventListener('DOMContentLoaded', async function() {
-    console.log('Account page loaded');
-    console.log('Token:', localStorage.getItem('vietspeak_token'));
+    logger.log('Account page loaded');
+    logger.log('Token:', localStorage.getItem('vietspeak_token'));
     
     if (!isLoggedIn()) {
-        console.log('Not logged in, redirecting to login...');
+        logger.log('Not logged in, redirecting to login...');
         window.location.href = '/login';
         return;
     }
 
-    console.log('User is logged in, loading data...');
+    logger.log('User is logged in, loading data...');
     
     // Load data concurrently to improve speed
     await Promise.allSettled([
@@ -354,7 +354,7 @@ async function loadAssignments() {
                 notification.style.display = pendingCount > 0 ? 'inline-block' : 'none';
             }
             
-            console.log(`Loaded ${assignments.length} assignments, ${pendingCount} pending`);
+            logger.log(`Loaded ${assignments.length} assignments, ${pendingCount} pending`);
         } else {
             console.error('Failed to load assignments:', data);
         }
