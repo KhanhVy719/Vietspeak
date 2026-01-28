@@ -38,7 +38,7 @@ class TeamMember extends Model
      */
     public function scopeActive($query)
     {
-        return $query->where('is_active', '=', true);
+        return $query->whereRaw('CAST(is_active AS boolean) = true');
     }
 
     /**
