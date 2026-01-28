@@ -245,7 +245,7 @@ class OpenAiService
     protected function transcribeAudioFile($filePath)
     {
         try {
-            $response = Http::timeout(60)->withHeaders([
+            $response = Http::timeout(180)->withHeaders([
                 'Authorization' => 'Bearer ' . $this->apiKey
             ])->attach('file', file_get_contents($filePath), 'audio.mp3')
               ->post("{$this->baseUrl}/audio/transcriptions", [

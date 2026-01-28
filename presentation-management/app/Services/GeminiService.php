@@ -67,7 +67,7 @@ class GeminiService
 
             $url = "{$this->baseUrl}/{$this->model}:generateContent?key={$this->apiKey}";
 
-            $response = Http::withoutVerifying()->timeout(120)->post($url, [
+            $response = Http::withoutVerifying()->timeout(300)->post($url, [
                 'contents' => [[
                     'parts' => [
                         ['text' => $prompt],
