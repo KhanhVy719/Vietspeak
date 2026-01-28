@@ -71,3 +71,4 @@ Route::post('/payment/webhook', [App\Http\Controllers\Api\PaymentController::cla
 
 // Public APIs
 Route::get('/public/courses', [App\Http\Controllers\Api\PublicController::class, 'courses']);
+Route::get('/public/team', [App\Http\Controllers\Api\PublicController::class, 'teamMembers']);

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Course;
+use App\Models\TeamMember;
 
 class PublicController extends Controller
 {
@@ -32,6 +33,32 @@ class PublicController extends Controller
                     'instructor' => $course->instructor,
                     'level' => $course->level,
                     'thumbnail' => null // Column does not exist yet
+                ];
+            })
+        ]);
+    }
+
+    /**
+     * Get list of active team members
+     */
+    public function teamMembers()
+    {
+        $members = TeamMember::active()
+            ->ordered()
+            ->get(['id', 'name', 'initials', 'title', 'description', 'avatar_color', 'avatar', 'order']);
+
+        return response()->json([
+            'success' => true,
+            'data' => $members->map(function($member) {
+                return [
+                    'id' => $member->id,
+                    'name' => $member->name,
+                    'initials' => $member->initials,
+                    'title' => $member->title,
+                    'description' => $member->description,
+                    'avatar_color' => $member->avatar_color,
+                    'avatar_url' => $member->avatar_url, // Will be null if no avatar
+                    'order' => $member->order
                 ];
             })
         ]);

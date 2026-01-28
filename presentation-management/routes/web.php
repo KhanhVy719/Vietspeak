@@ -105,6 +105,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('settings/ai', [App\Http\Controllers\Admin\SettingController::class, 'aiConfig'])->name('settings.ai-config');
     Route::post('settings/ai', [App\Http\Controllers\Admin\SettingController::class, 'updateAiConfig'])->name('settings.update-ai-config');
     Route::post('settings/ai/test', [App\Http\Controllers\Admin\SettingController::class, 'testAiConnection'])->name('settings.test-ai-connection');
+    
+    // Team Members Management
+    Route::resource('team', App\Http\Controllers\Admin\TeamMemberController::class);
 });
 
 // Emergency route to force Gemini
