@@ -45,6 +45,7 @@ Route::middleware(['auth:sanctum', 'role:student'])->prefix('student')->group(fu
 
 Route::post('/ai/analyze', [App\Http\Controllers\Api\AiController::class, 'analyze'])->middleware('auth:sanctum');
 Route::post('/ai/analyze-video', [App\Http\Controllers\Api\AiController::class, 'analyzeVideo'])->middleware('auth:sanctum');
+Route::post('/ai/analyze-video/', [App\Http\Controllers\Api\AiController::class, 'analyzeVideo'])->middleware('auth:sanctum'); // With trailing slash
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/payment/create-link', [App\Http\Controllers\Api\PaymentController::class, 'createPaymentLink']);
