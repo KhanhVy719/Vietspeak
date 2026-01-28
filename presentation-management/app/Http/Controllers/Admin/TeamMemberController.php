@@ -30,20 +30,20 @@ class TeamMemberController extends Controller
             'avatar_color' => 'required|string|max:7',
             'avatar' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
             'order' => 'required|integer|min:0',
-            'is_active' => 'boolean'
         ]);
+
+        // Handle checkbox - if not present, set to false
+        $validated['is_active'] = $request->has('is_active') ? 1 : 0;
 
         // Handle avatar upload
         if ($request->hasFile('avatar')) {
             $validated['avatar'] = $request->file('avatar')->store('team_avatars', 'public');
         }
 
-        $validated['is_active'] = $request->has('is_active');
-
         TeamMember::create($validated);
 
         return redirect()->route('admin.team.index')
-            ->with('success', 'Thành viên đã được thêm thành công!');
+            ->with('success', 'Thành viên đã được thêm!');
     }
 
     public function edit(TeamMember $team)
@@ -61,8 +61,10 @@ class TeamMemberController extends Controller
             'avatar_color' => 'required|string|max:7',
             'avatar' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
             'order' => 'required|integer|min:0',
-            'is_active' => 'boolean'
         ]);
+
+        // Handle checkbox - if not present, set to false (0)
+        $validated['is_active'] = $request->has('is_active') ? 1 : 0;
 
         // Handle new avatar upload
         if ($request->hasFile('avatar')) {
@@ -72,8 +74,6 @@ class TeamMemberController extends Controller
             }
             $validated['avatar'] = $request->file('avatar')->store('team_avatars', 'public');
         }
-
-        $validated['is_active'] = $request->has('is_active');
 
         $team->update($validated);
 
