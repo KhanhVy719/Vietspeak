@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\StudentApiController;
 use App\Http\Controllers\Api\AvatarController;
 use App\Http\Controllers\Api\ClassroomApiController;
 use App\Http\Controllers\Api\AssignmentApiController;
+use App\Http\Controllers\Api\PaymentController;
 
 /*
 |--------------------------------------------------------------------------
