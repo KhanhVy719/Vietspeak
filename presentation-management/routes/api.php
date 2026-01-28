@@ -8,6 +8,8 @@ use App\Http\Controllers\Api\AvatarController;
 use App\Http\Controllers\Api\ClassroomApiController;
 use App\Http\Controllers\Api\AssignmentApiController;
 use App\Http\Controllers\Api\PaymentController;
+use App\Http\Controllers\Api\AiController;
+use App\Http\Controllers\Api\PublicController;
 
 /*
 |--------------------------------------------------------------------------
