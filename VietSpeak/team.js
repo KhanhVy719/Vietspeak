@@ -1,4 +1,6 @@
 // team.js - Load team members dynamically
+const API_BASE_URL = 'https://api.khanhwiee.site';
+
 document.addEventListener('DOMContentLoaded', async function() {
     try {
         const response = await fetch(`${API_BASE_URL}/api/public/team`);
