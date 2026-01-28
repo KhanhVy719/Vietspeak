@@ -52,6 +52,22 @@
                          
                          return `
                             <div class="course-card ${isActive}" onclick="activateCard(this)">
+                                <span class="badge">${course.level || 'NEW'}</span>
+                                <div class="card-header">
+                                    <h2>${course.name}</h2>
+                                </div>
+                                <div class="course-details">
+                                    <span class="price">${course.formatted_price}</span>
+                                    <div class="info-section">
+                                        <span class="info-title">📍 Mô tả</span>
+                                        <p class="info-content" style="white-space: pre-wrap;">${course.description || 'Chưa có mô tả chi tiết.'}</p>
+                                    </div>
+                                    <div class="info-section">
+                                        <span class="info-title">👨‍🏫 Giảng viên</span>
+                                        <p class="info-content">${course.instructor || 'VietSpeak Team'}</p>
+                                    </div>
+                                    <a href="https://forms.gle/jTrXji6UaLHRuqJ4A" target="_blank" class="btn-reg">Click để nhận tư vấn</a>
+                                </div>
                             </div>
                          `;
                      }).join('');
