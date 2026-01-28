@@ -23,6 +23,9 @@
                         <x-nav-link :href="route('admin.settings.ai-config')" :active="request()->routeIs('admin.settings.ai-config')">
                             {{ __('AI Configuration') }}
                         </x-nav-link>
+                        <x-nav-link :href="route('admin.team.index')" :active="request()->routeIs('admin.team.*')">
+                            {{ __('Team Members') }}
+                        </x-nav-link>
                     @endif
                 </div>
             </div>
