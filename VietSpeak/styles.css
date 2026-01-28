@@ -800,12 +800,35 @@ nav a:hover, nav a.active {
 @media (max-width: 992px) {
     .courses-wrapper { flex-direction: column; height: auto; }
     .course-card { min-height: 120px; flex: none; width: 100%; }
-    .course-card h2 { writing-mode: horizontal-tb; transform: rotate(0); }
-    .course-card.active { min-height: auto; flex: none; }
+    .course-card h2 { writing-mode: horizontal-tb; transform: rotate(0); font-size: 1.5rem; }
+    .course-card.active { min-height: auto; flex: none; padding: 20px; }
     
     /* Make active card expand properly on mobile */
     .course-card.active .course-details {
         padding-top: 10px;
+    }
+    
+    /* Mobile price adjustment */
+    .course-card.active .price {
+        font-size: 1.8rem;
+        word-break: break-word;
+    }
+    
+    /* Mobile description adjustment */
+    .course-card.active .info-content {
+        font-size: 1rem;
+        padding-left: 15px;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        line-height: 1.6;
+    }
+    
+    /* Mobile button adjustment */
+    .btn-reg {
+        padding: 12px 30px;
+        font-size: 0.9rem;
+        width: 100%;
+        text-align: center;
     }
 }
 

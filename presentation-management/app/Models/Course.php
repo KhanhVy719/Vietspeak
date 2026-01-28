@@ -27,6 +27,19 @@ class Course extends Model
         'end_date' => 'date',
     ];
 
+    protected $appends = ['formatted_price'];
+
+    /**
+     * Get formatted price with thousand separators
+     */
+    public function getFormattedPriceAttribute(): string
+    {
+        if ($this->price == 0 || $this->price === null) {
+            return 'Miễn phí';
+        }
+        return number_format($this->price, 0, ',', '.') . 'đ';
+    }
+
     /**
      * Students enrolled in this course
      */
