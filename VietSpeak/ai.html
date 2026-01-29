@@ -36,7 +36,7 @@
                     <input type="file" id="audioInput" accept="audio/*">
                 </label>
                 <audio id="audioPreview" controls style="display:none;"></audio>
-                <button class="analyze-btn" onclick="analyzeAudio()">Bắt đầu phân tích</button>
+                <button class="analyze-btn" id="analyzeAudioBtn" onclick="analyzeAudio()">Bắt đầu phân tích</button>
             </div>
 
             <div class="card">
@@ -47,7 +47,7 @@
                     <input type="file" id="imgInput" accept="image/*">
                 </label>
                 <img id="preview" class="preview-img" />
-                <button class="analyze-btn" onclick="analyzeImage()">Kiểm tra phong thái</button>
+                <button class="analyze-btn" id="analyzeImageBtn" onclick="analyzeImage()">Kiểm tra phong thái</button>
             </div>
 
             <div class="card">
@@ -61,7 +61,7 @@
                     <input type="file" id="videoInput" accept="video/*">
                 </label>
                 <video id="videoPreview" controls style="display:none; max-width: 100%; border-radius: 8px; margin-top: 10px;"></video>
-                <button class="analyze-btn" onclick="analyzeVideo()">Phân tích Video (5k)</button>
+                <button class="analyze-btn" id="analyzeVideoBtn" onclick="analyzeVideo()">Phân tích Video (5k)</button>
             </div>
         </div>
 
@@ -99,6 +99,7 @@
         async function analyzeAudio() {
             const fileInput = document.getElementById("audioInput");
             const resultBox = document.getElementById("result");
+            const analyzeBtn = document.getElementById("analyzeAudioBtn");
 
             if (!fileInput.files[0]) {
                 resultBox.innerText = "Vui lòng chọn file âm thanh (mp3/wav)!";
@@ -112,6 +113,9 @@
                  return;
             }
 
+            // Disable button and show loading
+            analyzeBtn.disabled = true;
+            analyzeBtn.textContent = "⏳ Đang phân tích...";
             resultBox.innerText = "Đang gửi file âm thanh tới AI (quá trình này có thể mất vài giây)...";
 
             try {
@@ -193,6 +197,10 @@
                 resultBox.innerHTML = `<div style="color: #dc3545; background: #f8d7da; padding: 15px; border-radius: 8px; border: 1px solid #f5c6cb;">
                     <strong>❌ Lỗi kết nối</strong><br>${err.message}
                 </div>`;
+            } finally {
+                // Re-enable button
+                analyzeBtn.disabled = false;
+                analyzeBtn.textContent = "Bắt đầu phân tích";
             }
         }
 
@@ -210,6 +218,7 @@
         async function analyzeImage() {
             const fileInput = document.getElementById("imgInput");
             const resultBox = document.getElementById("result");
+            const analyzeBtn = document.getElementById("analyzeImageBtn");
 
             if (!fileInput.files[0]) {
                 resultBox.innerText = "Vui lòng chọn ảnh!";
@@ -222,6 +231,9 @@
                  return;
             }
 
+            // Disable button and show loading
+            analyzeBtn.disabled = true;
+            analyzeBtn.textContent = "⏳ Đang phân tích...";
             resultBox.innerText = "Đang phân tích hình ảnh...";
 
             try {
@@ -295,6 +307,10 @@
                 resultBox.innerHTML = `<div style="color: #dc3545; background: #f8d7da; padding: 15px; border-radius: 8px; border: 1px solid #f5c6cb;">
                     <strong>❌ Lỗi kết nối</strong><br>${err.message}
                 </div>`;
+            } finally {
+                // Re-enable button
+                analyzeBtn.disabled = false;
+                analyzeBtn.textContent = "Kiểm tra phong thái";
             }
         }
 
@@ -322,6 +338,7 @@
         async function analyzeVideo() {
             const fileInput = document.getElementById("videoInput");
             const resultBox = document.getElementById("result");
+            const analyzeBtn = document.getElementById("analyzeVideoBtn");
 
             if (!fileInput.files[0]) {
                 resultBox.innerText = "Vui lòng chọn file video!";
@@ -339,6 +356,9 @@
             const formData = new FormData();
             formData.append('file', file);
 
+            // Disable button and show loading
+            analyzeBtn.disabled = true;
+            analyzeBtn.textContent = "⏳ Đang xử lý...";
             resultBox.innerHTML = "⏳ Đang upload và phân tích video... Vui lòng chờ (có thể mất 30-90 giây vì video dung lượng lớn)...";
 
             try {
@@ -395,6 +415,10 @@
                 resultBox.innerHTML = `<div style="color: #dc3545; background: #f8d7da; padding: 15px; border-radius: 8px; border: 1px solid #f5c6cb;">
                     <strong>❌ Lỗi kết nối</strong><br>${err.message}
                 </div>`;
+            } finally {
+                // Re-enable button
+                analyzeBtn.disabled = false;
+                analyzeBtn.textContent = "Phân tích Video (5k)";
             }
         }
 
