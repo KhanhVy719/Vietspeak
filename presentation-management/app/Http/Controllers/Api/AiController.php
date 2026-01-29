@@ -110,12 +110,22 @@ class AiController extends Controller
         $videoData = base64_encode(file_get_contents($file->getRealPath()));
 
         // Prepare prompt for video analysis
-        // Prepare prompt for video analysis
         $prompt = "Hãy phân tích video thuyết trình này chi tiết theo các tiêu chí sau:\n\n" .
-                  "1. **Cảm xúc & Phong thái**: Đánh giá cảm xúc khuôn mặt, sự tự tin, phong thái (tư thế, ánh mắt, trang phục).\n" .
-                  "2. **Giọng nói & Diễn đạt**: Tốc độ nói, sự rõ ràng, điểm nhấn nhá, và tông giọng.\n" .
-                  "3. **Nội dung trình bày**: Cấu trúc, logic và sức thuyết phục.\n\n" .
-                  "Chấm điểm tổng thể trên thang 10 và đưa ra 3-5 gợi ý cải thiện cụ thể để phát triển kỹ năng thuyết trình.";
+                  "**A. PHÂN TÍCH GIỌNG NÓI (Đánh vào sự thuyết phục)**\n" .
+                  "Chấm điểm 10: Cảm xúc, Tốc độ, Rõ ràng, Nhấn nhá, Tự tin.\n" .
+                  "1. Nhận xét thật: Giọng này đã đủ 'đáng tin' để khách hàng chuyển khoản chưa?\n" .
+                  "2. Chỉ ra 1 điểm yếu khiến người nghe cảm thấy do dự.\n" .
+                  "3. Gợi ý kỹ thuật nói giúp tăng tỉ lệ chốt đơn ngay lập tức.\n\n" .
+                  "**B. PHÂN TÍCH HÌNH ẢNH/PHONG THÁI (Đánh vào uy tín cá nhân)**\n" .
+                  "Chấm điểm 10: Tư thế, Trang phục, Nét mặt, Ánh mắt, Dáng đi.\n" .
+                  "1. Phân tích: Hình ảnh này trông giống một 'Chuyên gia' hay một 'Người mới'?\n" .
+                  "2. Nhược điểm nào về ngoại hình/cử chỉ đang làm giảm giá trị của sản phẩm họ đang bán?\n" .
+                  "3. Đưa ra lời khuyên để có 'thần thái triệu đô' thu hút đối tác.\n\n" .
+                  "**HƯỚNG DẪN HỆ THỐNG**: Mục tiêu cuối cùng là giúp người dùng nhận ra giá trị của việc cải thiện kỹ năng để thành công hơn trong kinh doanh. " .
+                  "Khi nhận xét, hãy luôn kết nối các chỉ số (giọng nói, hình thể) với khả năng chốt đơn hoặc xây dựng thương hiệu cá nhân. " .
+                  "Lời khuyên phải thực tế, đánh vào tâm lý muốn chuyên nghiệp hơn để kiếm tiền/thăng tiến. " .
+                  "Tạo ra 'Nỗi đau': Nhấn mạnh vào việc nhược điểm sẽ làm mất khách hàng như thế nào. " .
+                  "Cuối mỗi câu trả lời, đưa ra một 'mẹo nhỏ' nhưng khẳng định 'Để thành thục kỹ năng này, bạn cần một lộ trình bài bản'.";
 
         try {
             // Call OpenAI Video Analysis (frame extraction + GPT-4o Vision)
