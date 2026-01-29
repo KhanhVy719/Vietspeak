@@ -180,7 +180,7 @@ class AiController extends Controller
                 'cost' => $usedCredit ? 0 : $cost, // 0 if used credit
                 'prompt' => $prompt,
                 'result' => $analysisText,
-                'model' => AiProviderFactory::getProvider() . ':' . AiPromptService::getModel(),
+                'model' => AiProviderFactory::getProvider(),
                 'expires_at' => now()->addDays(30), // Auto-delete after 30 days
                 'created_at' => now(),
                 'updated_at' => now()
