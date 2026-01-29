@@ -55,11 +55,11 @@ Route::post('/auth/register', [StudentApiAuthController::class, 'register'])
 
 // AI Analysis routes with rate limiting
 Route::post('/ai/analyze', [AiController::class, 'analyze'])
-    ->middleware(['auth:sanctum', 'throttle:10,60']); // 10 analyses per hour
+    ->middleware(['auth:sanctum', 'throttle:10,1']); // 10 analyses per minute
 Route::post('/ai/analyze-video', [AiController::class, 'analyzeVideo'])
-    ->middleware(['auth:sanctum', 'throttle:10,60']); // 10 video analysis per hour (expensive!)
+    ->middleware(['auth:sanctum', 'throttle:5,1']); // 5 video analysis per minute (expensive!)
 Route::post('/ai/analyze-video/', [AiController::class, 'analyzeVideo'])
-    ->middleware(['auth:sanctum', 'throttle:10,60']); // With trailing slash
+    ->middleware(['auth:sanctum', 'throttle:5,1']); // With trailing slash
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/payment/create-link', [PaymentController::class, 'createPaymentLink']);

@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Services\AiProviderFactory;
+use App\Services\AiPromptService;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 
 class AiController extends Controller
 {
@@ -13,20 +15,44 @@ class AiController extends Controller
 
     public function analyze(Request $request)
     {
+        // Define allowed mime types
+        $allowedMimeTypes = [
+            'audio' => ['audio/mpeg', 'audio/wav', 'audio/mp3', 'audio/x-wav'],
+            'image' => ['image/jpeg', 'image/jpg', 'image/png']
+        ];
+
         $validator = Validator::make($request->all(), [
-            'prompt' => 'required|string',
+            'type' => 'required|in:voice,image',
             'mime_type' => 'required|string',
             'data' => 'required|string',
             'model' => 'nullable|string'
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['error' => $validator->errors()], 422);
+            return response()->json([
+                'error' => 'Validation failed',
+                'details' => $validator->errors()
+            ], 422);
         }
 
-        $prompt = $request->input('prompt');
+        $type = $request->input('type');
         $mimeType = $request->input('mime_type');
         $base64Data = $request->input('data');
+
+        // Validate mime type matches type
+        $expectedMimes = $type === 'voice' ? $allowedMimeTypes['audio'] : $allowedMimeTypes['image'];
+        if (!in_array($mimeType, $expectedMimes)) {
+            return response()->json([
+                'error' => 'Invalid mime type',
+                'message' => "Mime type {$mimeType} không hợp lệ cho loại {$type}. Chỉ chấp nhận: " . implode(', ', $expectedMimes)
+            ], 400);
+        }
+
+        // Get prompt from service (prevent injection)
+        $prompt = match($type) {
+            'voice' => AiPromptService::getVoicePrompt(),
+            'image' => AiPromptService::getImagePrompt(),
+        };
 
         // Simple security: allow only specific models to prevent abuse?
         // For now, trust the frontend (or default to flash)
@@ -109,23 +135,8 @@ class AiController extends Controller
         // Read video file and encode to base64
         $videoData = base64_encode(file_get_contents($file->getRealPath()));
 
-        // Prepare prompt for video analysis
-        $prompt = "Hãy phân tích video thuyết trình này chi tiết theo các tiêu chí sau:\n\n" .
-                  "**A. PHÂN TÍCH GIỌNG NÓI (Đánh vào sự thuyết phục)**\n" .
-                  "Chấm điểm 10: Cảm xúc, Tốc độ, Rõ ràng, Nhấn nhá, Tự tin.\n" .
-                  "1. Nhận xét thật: Giọng này đã đủ 'đáng tin' để khách hàng chuyển khoản chưa?\n" .
-                  "2. Chỉ ra 1 điểm yếu khiến người nghe cảm thấy do dự.\n" .
-                  "3. Gợi ý kỹ thuật nói giúp tăng tỉ lệ chốt đơn ngay lập tức.\n\n" .
-                  "**B. PHÂN TÍCH HÌNH ẢNH/PHONG THÁI (Đánh vào uy tín cá nhân)**\n" .
-                  "Chấm điểm 10: Tư thế, Trang phục, Nét mặt, Ánh mắt, Dáng đi.\n" .
-                  "1. Phân tích: Hình ảnh này trông giống một 'Chuyên gia' hay một 'Người mới'?\n" .
-                  "2. Nhược điểm nào về ngoại hình/cử chỉ đang làm giảm giá trị của sản phẩm họ đang bán?\n" .
-                  "3. Đưa ra lời khuyên để có 'thần thái triệu đô' thu hút đối tác.\n\n" .
-                  "**HƯỚNG DẪN HỆ THỐNG**: Mục tiêu cuối cùng là giúp người dùng nhận ra giá trị của việc cải thiện kỹ năng để thành công hơn trong kinh doanh. " .
-                  "Khi nhận xét, hãy luôn kết nối các chỉ số (giọng nói, hình thể) với khả năng chốt đơn hoặc xây dựng thương hiệu cá nhân. " .
-                  "Lời khuyên phải thực tế, đánh vào tâm lý muốn chuyên nghiệp hơn để kiếm tiền/thăng tiến. " .
-                  "Tạo ra 'Nỗi đau': Nhấn mạnh vào việc nhược điểm sẽ làm mất khách hàng như thế nào. " .
-                  "Cuối mỗi câu trả lời, đưa ra một 'mẹo nhỏ' nhưng khẳng định 'Để thành thục kỹ năng này, bạn cần một lộ trình bài bản'.";
+        // Prepare prompt for video analysis from service
+        $prompt = AiPromptService::getVideoPrompt();
 
         try {
             // Call OpenAI Video Analysis (frame extraction + GPT-4o Vision)
@@ -162,14 +173,15 @@ class AiController extends Controller
                 $user->decrement('balance', $cost);
             }
 
-            // Save to history
+            // Save to history with expiration
             \Illuminate\Support\Facades\DB::table('ai_analysis_history')->insert([
                 'user_id' => $user->id,
                 'type' => 'video',
                 'cost' => $usedCredit ? 0 : $cost, // 0 if used credit
                 'prompt' => $prompt,
                 'result' => $analysisText,
-                'model' => AiProviderFactory::getProvider() . ':' . AiProviderFactory::getModel(),
+                'model' => AiProviderFactory::getProvider() . ':' . AiPromptService::getModel(),
+                'expires_at' => now()->addDays(30), // Auto-delete after 30 days
                 'created_at' => now(),
                 'updated_at' => now()
             ]);
