@@ -120,7 +120,14 @@
 
                 // Backend Payload
                 const payload = {
-                    prompt: "Hãy phân tích giọng nói chấm trên thang điểm 10 theo các tiêu chí: 1. Cảm xúc; 2. Tốc độ nói; 3. Sự rõ ràng; 4. Nhấn nhá; 5. Tự tin. Sau đó gợi ý cải thiện.",
+                    prompt: `Phân tích giọng nói. Chấm điểm 10 (Cảm xúc, Tốc độ, Rõ ràng, Nhấn nhá, Tự tin).
+
+**Yêu cầu chuyên biệt:**
+1. Nhận xét thật: Giọng này đã đủ 'đáng tin' để khách hàng chuyển khoản chưa?
+2. Chỉ ra 1 điểm yếu khiến người nghe cảm thấy do dự.
+3. Gợi ý kỹ thuật nói giúp tăng tỉ lệ chốt đơn ngay lập tức.
+
+**Hướng dẫn hệ thống**: Mục tiêu cuối cùng là giúp người dùng nhận ra giá trị của việc cải thiện kỹ năng để thành công hơn trong kinh doanh. Khi nhận xét, hãy luôn kết nối các chỉ số giọng nói với khả năng chốt đơn hoặc xây dựng thương hiệu cá nhân. Lời khuyên phải thực tế, đánh vào tâm lý muốn chuyên nghiệp hơn để kiếm tiền/thăng tiến. Tạo ra "Nỗi đau": Nhấn mạnh vào việc nhược điểm sẽ làm mất khách hàng như thế nào. Cuối mỗi câu trả lời, đưa ra một "mẹo nhỏ" nhưng khẳng định "Để thành thục kỹ năng này, bạn cần một lộ trình bài bản".`,
                     mime_type: mimeType,
                     data: base64Data,
                     model: PREFERRED_MODEL
@@ -222,7 +229,14 @@
                 const mimeType = file.type || "image/jpeg";
 
                 const payload = {
-                    prompt: "Hãy nhận xét theo các yếu tố: 1. Tư thế; 2. Trang phục; 3. Nét mặt; 4. Ánh mắt; 5. Phong thái. Chấm điểm 10 và gợi ý phát triển.",
+                    prompt: `Phân tích phong thái (Tư thế, Trang phục, Nét mặt, Ánh mắt, Dáng đi). Chấm điểm 10.
+
+**Yêu cầu chuyên biệt:**
+1. Phân tích: Hình ảnh này trông giống một 'Chuyên gia' hay một 'Người mới'?
+2. Nhược điểm nào về ngoại hình/cử chỉ đang làm giảm giá trị của sản phẩm họ đang bán?
+3. Đưa ra lời khuyên để có 'thần thái triệu đô' thu hút đối tác.
+
+**Hướng dẫn hệ thống**: Mục tiêu cuối cùng là giúp người dùng nhận ra giá trị của việc cải thiện kỹ năng để thành công hơn trong kinh doanh. Khi nhận xét, hãy luôn kết nối các chỉ số (giọng nói, hình thể) với khả năng chốt đơn hoặc xây dựng thương hiệu cá nhân. Lời khuyên phải thực tế, đánh vào tâm lý muốn chuyên nghiệp hơn để kiếm tiền/thăng tiến. Tạo ra "Nỗi đau": Nhấn mạnh vào việc nhược điểm sẽ làm mất khách hàng như thế nào. Cuối mỗi câu trả lời, đưa ra một "mẹo nhỏ" nhưng khẳng định "Để thành thục kỹ năng này, bạn cần một lộ trình bài bản".`,
                     mime_type: mimeType,
                     data: base64Data,
                     model: PREFERRED_MODEL
