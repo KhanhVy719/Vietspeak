@@ -872,7 +872,7 @@ nav a:hover, nav a.active {
 
 .split-box {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr; /* 3 cột cho 3 chức năng */
     gap: 30px;
 }
 
