@@ -71,15 +71,205 @@
     </div>
 
     <!-- Video Popup Modal -->
-    <div id="videoModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 9999; padding: 20px; overflow: hidden;">
-        <div style="position: relative; max-width: 1200px; margin: 0 auto; height: 100%; display: flex; align-items: center; justify-content: center;">
-            <button onclick="closeVideoPopup()" style="position: absolute; top: 20px; right: 20px; background: white; border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 24px; cursor: pointer; z-index: 10000;">&times;</button>
-            <video id="popupVideo" controls autoplay style="width: 100%; max-width: 1000px; border-radius: 12px; box-shadow: 0 20px 60px rgba(0,0,0,0.5);">
-                <source src="https://video.khanhwiee.site/3307213871417003697.mp4" type="video/mp4">
-                Your browser does not support the video tag.
-            </video>
+    <div id="videoModal" class="video-modal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content">
+            <div class="video-header">
+                <div class="video-info">
+                    <h2>🌐 Mạng lưới kết nối VIETSPEAKAI</h2>
+                    <p>Khám phá cộng đồng học viên và chuyên gia trên toàn quốc</p>
+                </div>
+                <button class="close-btn" onclick="closeVideoPopup()">
+                    <span>✕</span>
+                </button>
+            </div>
+            <div class="video-wrapper">
+                <video id="popupVideo" controls>
+                    <source src="https://video.khanhwiee.site/3307213871417003697.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+            <div class="video-footer">
+                <span class="video-badge">🎥 Video Giới Thiệu</span>
+                <span class="video-duration" id="videoDuration">--:--</span>
+            </div>
         </div>
     </div>
+
+    <style>
+        .video-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .video-modal.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { 
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to { 
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-backdrop {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(26, 58, 95, 0.95), rgba(44, 82, 130, 0.95));
+            backdrop-filter: blur(10px);
+        }
+
+        .modal-content {
+            position: relative;
+            max-width: 1100px;
+            margin: 0 auto;
+            top: 50%;
+            transform: translateY(-50%);
+            animation: slideUp 0.4s ease-out;
+            padding: 20px;
+        }
+
+        .video-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 20px 30px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px 12px 0 0;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .video-info h2 {
+            margin: 0;
+            font-size: 1.8rem;
+            color: #1a3a5f;
+            font-weight: 700;
+        }
+
+        .video-info p {
+            margin: 5px 0 0;
+            color: #636e72;
+            font-size: 0.95rem;
+        }
+
+        .close-btn {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(238, 90, 111, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-btn span {
+            color: white;
+            font-size: 24px;
+            font-weight: 300;
+        }
+
+        .close-btn:hover {
+            transform: rotate(90deg) scale(1.1);
+            box-shadow: 0 6px 20px rgba(238, 90, 111, 0.5);
+        }
+
+        .video-wrapper {
+            position: relative;
+            background: #000;
+            border-radius: 0;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+        }
+
+        .video-wrapper video {
+            width: 100%;
+            display: block;
+            max-height: 70vh;
+        }
+
+        .video-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 0 0 12px 12px;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
+        }
+
+        .video-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            box-shadow: 0 3px 10px rgba(102, 126, 234, 0.3);
+        }
+
+        .video-duration {
+            color: #636e72;
+            font-weight: 600;
+            font-size: 0.9rem;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .modal-content {
+                padding: 10px;
+            }
+
+            .video-header {
+                padding: 15px;
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .video-info h2 {
+                font-size: 1.3rem;
+            }
+
+            .video-info p {
+                font-size: 0.85rem;
+            }
+
+            .video-footer {
+                padding: 12px 15px;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .video-wrapper video {
+                max-height: 50vh;
+            }
+        }
+    </style>
 
     <footer style="text-align: center; padding: 40px; color: #a4b0be; font-size: 0.9rem;">
         &copy; 2024 VietSpeak Academy Library. Bảo lưu mọi quyền.
@@ -91,7 +281,18 @@
             const modal = document.getElementById('videoModal');
             const video = document.getElementById('popupVideo');
             modal.style.display = 'block';
+            setTimeout(() => modal.classList.add('active'), 10);
             video.play();
+            
+            // Update duration when metadata loads
+            video.addEventListener('loadedmetadata', function() {
+                const duration = Math.floor(video.duration);
+                const minutes = Math.floor(duration / 60);
+                const seconds = duration % 60;
+                document.getElementById('videoDuration').textContent = 
+                    `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            });
+            
             // Prevent body scroll
             document.body.style.overflow = 'hidden';
         }
@@ -99,7 +300,8 @@
         function closeVideoPopup() {
             const modal = document.getElementById('videoModal');
             const video = document.getElementById('popupVideo');
-            modal.style.display = 'none';
+            modal.classList.remove('active');
+            setTimeout(() => modal.style.display = 'none', 300);
             video.pause();
             video.currentTime = 0;
             // Restore body scroll
@@ -113,9 +315,9 @@
             }
         });
 
-        // Close when clicking outside video
-        document.getElementById('videoModal').addEventListener('click', function(e) {
-            if (e.target === this) {
+        // Close when clicking backdrop
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal-backdrop')) {
                 closeVideoPopup();
             }
         });
