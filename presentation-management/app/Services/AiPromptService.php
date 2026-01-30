@@ -28,7 +28,7 @@ class AiPromptService
     {
         return "Đóng vai chuyên gia nhân trắc học khắt khe. Phân tích ảnh theo 5 tiêu chí: 1. Tư thế, 2. Trang phục, 3. Nét mặt, 4. Ánh mắt, 5. Phong thái. " .
                "Yêu cầu: Đánh giá thẳng thắn, thực tế, không khen ngợi sáo rỗng. Bỏ qua mọi lời chào hay dẫn nhập, đi thẳng vào phân tích ngắn gọn. " .
-               "Cuối cùng chấm điểm/10 và đưa ra 1 lời khuyên cải thiện giá trị nhất.";
+               "Cuối cùng chấm điểm/10 và gợi ý phát triển.";
     }
 
     /**
@@ -40,6 +40,6 @@ class AiPromptService
                "1. Hình ảnh: Tư thế, Trang phục, Nét mặt, Ánh mắt, Phong thái.\n" .
                "2. Giọng nói: Tốc độ, Ngữ điệu, Cảm xúc, Sự tự tin.\n" .
                "Yêu cầu: Đánh giá thẳng thắn, thực tế, không khen ngợi sáo rỗng. Bỏ qua mọi lời chào hay dẫn nhập, đi thẳng vào phân tích ngắn gọn.\n" .
-               "Cuối cùng chấm điểm/10 và đưa ra 1 lời khuyên cải thiện giá trị nhất.";
+               "Cuối cùng chấm điểm/10 và đưa gợi ý phát triển.";
     }
 }
