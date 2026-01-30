@@ -69,6 +69,10 @@ Route::middleware('auth:sanctum')->group(function () {
 // Webhook không cần auth sanctum, nhưng cần bảo mật IP hoặc Token (để mở public cho SePay call)
 Route::post('/payment/webhook', [App\Http\Controllers\Api\PaymentController::class, 'webhook']);
 
+// R2 Test Routes (Development only - remove in production)
+Route::get('/r2/test-upload', [App\Http\Controllers\Api\R2TestController::class, 'testUpload']);
+Route::get('/r2/list-files', [App\Http\Controllers\Api\R2TestController::class, 'listFiles']);
+
 // Public APIs
 Route::get('/public/courses', [App\Http\Controllers\Api\PublicController::class, 'courses']);
 Route::get('/public/team', [App\Http\Controllers\Api\PublicController::class, 'teamMembers']);
