@@ -47,6 +47,13 @@
             <a href="javascript:alert('Tính năng đang được cập nhật!')" class="download-btn">Tải bản PDF</a>
         </div>
 
+        <div class="resource-card">
+            <div class="icon-box">🌐</div>
+            <h3>Mạng lưới kết nối VIETSPEAKAI</h3>
+            <p>Khám phá cộng đồng học viên, đối tác và chuyên gia của VietSpeak Academy trên toàn quốc.</p>
+            <a href="javascript:openVideoPopup()" class="download-btn">Xem Video Giới Thiệu</a>
+        </div>
+
     </div>
 
     <div class="newsletter">
@@ -63,11 +70,58 @@
         </div>
     </div>
 
+    <!-- Video Popup Modal -->
+    <div id="videoModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 9999; padding: 20px; overflow: hidden;">
+        <div style="position: relative; max-width: 1200px; margin: 0 auto; height: 100%; display: flex; align-items: center; justify-content: center;">
+            <button onclick="closeVideoPopup()" style="position: absolute; top: 20px; right: 20px; background: white; border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 24px; cursor: pointer; z-index: 10000;">&times;</button>
+            <video id="popupVideo" controls autoplay style="width: 100%; max-width: 1000px; border-radius: 12px; box-shadow: 0 20px 60px rgba(0,0,0,0.5);">
+                <source src="https://video.khanhwiee.site/3307213871417003697.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+    </div>
+
     <footer style="text-align: center; padding: 40px; color: #a4b0be; font-size: 0.9rem;">
         &copy; 2024 VietSpeak Academy Library. Bảo lưu mọi quyền.
     </footer>
-    <script src="logger.js"></script>
 
+    <script>
+        // Video popup functions
+        function openVideoPopup() {
+            const modal = document.getElementById('videoModal');
+            const video = document.getElementById('popupVideo');
+            modal.style.display = 'block';
+            video.play();
+            // Prevent body scroll
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeVideoPopup() {
+            const modal = document.getElementById('videoModal');
+            const video = document.getElementById('popupVideo');
+            modal.style.display = 'none';
+            video.pause();
+            video.currentTime = 0;
+            // Restore body scroll
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close on ESC key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeVideoPopup();
+            }
+        });
+
+        // Close when clicking outside video
+        document.getElementById('videoModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeVideoPopup();
+            }
+        });
+    </script>
+
+    <script src="logger.js"></script>
     <script src="auth.js"></script>
 </body>
 </html>
