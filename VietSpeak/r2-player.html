@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>R2 Video Player - VietSpeak</title>
+    <link href="https://vjs.zencdn.net/8.6.1/video-js.css" rel="stylesheet" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a3a5f 0%, #2c5282 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+        }
+        .player-wrapper {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .video-js {
+            width: 100%;
+            height: 600px;
+            border-radius: 12px;
+        }
+        .controls {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+        }
+        .controls h3 {
+            color: #1a3a5f;
+            margin-bottom: 15px;
+        }
+        .url-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            margin-bottom: 15px;
+        }
+        .btn {
+            background: #1a3a5f;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .btn:hover {
+            background: #2c5282;
+            transform: translateY(-2px);
+        }
+        .info {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            color: #0d47a1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎥 R2 Video Player</h1>
+        
+        <div class="player-wrapper">
+            <video id="my-video" class="video-js vjs-big-play-centered" controls preload="auto">
+                <p class="vjs-no-js">
+                    To view this video please enable JavaScript, and consider upgrading to a web browser that
+                    <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
+                </p>
+            </video>
+
+            <div class="controls">
+                <h3>Nhập URL Video từ R2</h3>
+                <input 
+                    type="text" 
+                    id="videoUrl" 
+                    class="url-input" 
+                    placeholder="https://videos.vietspeak.tech/path/to/video.mp4"
+                    value="">
+                <button class="btn" onclick="loadVideo()">Tải Video</button>
+
+                <div class="info">
+                    <strong>💡 Hướng dẫn:</strong><br>
+                    • Nếu video là HLS (.m3u8): R2 URL sẽ tự động stream<br>
+                    • Nếu video là MP4: Player sẽ load trực tiếp<br>
+                    • Format URL: <code>https://40c77a79e35d6fac37b8c4572e56117c.r2.cloudflarestorage.com/filename</code><br>
+                    • Hoặc (nếu đã setup custom domain): <code>https://videos.vietspeak.tech/filename</code>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://vjs.zencdn.net/8.6.1/video.min.js"></script>
+    <script>
+        // Initialize Video.js player
+        var player = videojs('my-video', {
+            controls: true,
+            autoplay: false,
+            preload: 'auto',
+            fluid: true,
+            responsive: true
+        });
+
+        function loadVideo() {
+            var url = document.getElementById('videoUrl').value.trim();
+            
+            if (!url) {
+                alert('Vui lòng nhập URL video!');
+                return;
+            }
+
+            // Determine video type
+            var type = 'video/mp4';
+            if (url.includes('.m3u8')) {
+                type = 'application/x-mpegURL';
+            } else if (url.includes('.webm')) {
+                type = 'video/webm';
+            }
+
+            // Load video
+            player.src({
+                src: url,
+                type: type
+            });
+
+            player.load();
+            player.play();
+            
+            console.log('Loading video:', url, 'Type:', type);
+        }
+
+        // Auto-load if URL is provided in query string
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const videoParam = urlParams.get('video');
+            
+            if (videoParam) {
+                document.getElementById('videoUrl').value = videoParam;
+                loadVideo();
+            }
+        };
+    </script>
+</body>
+</html>
