@@ -74,15 +74,15 @@
     <div id="videoModal" class="video-modal">
         <div class="modal-backdrop"></div>
         <div class="modal-content">
+            <button class="close-btn-floating" onclick="closeVideoPopup()">
+                <span>✕</span>
+            </button>
             <div class="video-container">
                 <div class="video-header">
                     <div class="video-info">
                         <h2>🌐 Mạng lưới kết nối VIETSPEAKAI</h2>
                         <p>Khám phá cộng đồng học viên và chuyên gia trên toàn quốc</p>
                     </div>
-                    <button class="close-btn" onclick="closeVideoPopup()">
-                        <span>✕</span>
-                    </button>
                 </div>
                 <div class="video-wrapper">
                     <video id="popupVideo" controls>
@@ -154,7 +154,7 @@
 
         .video-header {
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
             margin-bottom: 0;
             padding: 20px 30px;
@@ -162,6 +162,10 @@
             border-radius: 12px 12px 0 0;
             box-shadow: 0 5px 20px rgba(0,0,0,0.1);
             width: 100%;
+        }
+
+        .video-info {
+            text-align: center;
         }
 
         .video-info h2 {
@@ -177,29 +181,39 @@
             font-size: 0.95rem;
         }
 
-        .close-btn {
-            background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+        .close-btn-floating {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.95);
             border: none;
-            width: 45px;
-            height: 45px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(238, 90, 111, 0.3);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
             display: flex;
             align-items: center;
             justify-content: center;
+            z-index: 10001;
+            backdrop-filter: blur(10px);
         }
 
-        .close-btn span {
-            color: white;
-            font-size: 24px;
+        .close-btn-floating span {
+            color: #2d3436;
+            font-size: 20px;
             font-weight: 300;
         }
 
-        .close-btn:hover {
-            transform: rotate(90deg) scale(1.1);
-            box-shadow: 0 6px 20px rgba(238, 90, 111, 0.5);
+        .close-btn-floating:hover {
+            transform: scale(1.1);
+            background: rgba(255, 255, 255, 1);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .close-btn-floating:active {
+            transform: scale(0.95);
         }
 
         .video-wrapper {
