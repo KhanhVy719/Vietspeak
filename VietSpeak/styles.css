@@ -980,7 +980,9 @@ nav a:hover, nav a.active {
 }
 
 @media (max-width: 768px) {
-    .split-box { grid-template-columns: 1fr; }
+    .split-box { 
+        grid-template-columns: 1fr !important; /* Override inline style on mobile */
+    }
 }
 
 /* --- LIBRARY PAGE STYLES --- */
