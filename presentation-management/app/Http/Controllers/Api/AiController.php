@@ -16,9 +16,14 @@ class AiController extends Controller
     public function analyze(Request $request)
     {
         // Define allowed mime types
+        // Define allowed mime types
         $allowedMimeTypes = [
-            'audio' => ['audio/mpeg', 'audio/wav', 'audio/mp3', 'audio/x-wav'],
-            'image' => ['image/jpeg', 'image/jpg', 'image/png']
+            'audio' => [
+                'audio/mpeg', 'audio/wav', 'audio/mp3', 'audio/x-wav', 
+                'audio/x-m4a', 'audio/m4a', 'audio/aac', 'audio/mp4', 'video/mp4', // Common voice recorder formats
+                'audio/x-aac', 'audio/mpeg3', 'audio/x-mpeg-3'
+            ],
+            'image' => ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
         ];
 
         $validator = Validator::make($request->all(), [
