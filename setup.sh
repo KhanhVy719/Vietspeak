@@ -132,18 +132,19 @@ const CONFIG = {
     API_URL: 'https://$BACKEND_DOMAIN/api',
     DEBUG: false
 };
+
+// Global fallback if needed (though auth.js defines its own)
+window.API_URL = CONFIG.API_URL;
 EOF
 echo "✅ Đã cập nhật VietSpeak/config.js"
 
-# 3.3 Update LMS Login Link in login.html
-echo "🔄 Đang cập nhật link LMS trong login.html..."
-sed -i "s|__BACKEND_DOMAIN__|$BACKEND_DOMAIN|g" VietSpeak/login.html
-echo "✅ Đã cập nhật VietSpeak/login.html"
-
-# 3.4 Update API URL in team.js
-echo "🔄 Đang cập nhật API URL trong team.js..."
-sed -i "s|__BACKEND_DOMAIN__|$BACKEND_DOMAIN|g" VietSpeak/team.js
-echo "✅ Đã cập nhật VietSpeak/team.js"
+# 3.3 Update window.API_URL in auth.js (if exists)
+if [ -f "VietSpeak/auth.js" ]; then
+    echo "🔄 Đang cập nhật API URL trong auth.js..."
+    # Replace any existing API_URL assignment
+    sed -i "s|window.API_URL = '.*'|window.API_URL = 'https://$BACKEND_DOMAIN/api'|g" VietSpeak/auth.js
+    echo "✅ Đã cập nhật VietSpeak/auth.js"
+fi
 
 
 
