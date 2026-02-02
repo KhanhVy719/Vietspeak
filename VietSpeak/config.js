@@ -1,5 +1,5 @@
 const CONFIG = {
-    API_URL: 'https://api.khanhwiee.site/api',
+    API_URL: 'https://vietspeakai.tranhungdaocfs.site/api',
     DEBUG: false
 };
 
