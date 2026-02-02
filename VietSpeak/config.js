@@ -1,5 +1,5 @@
 const CONFIG = {
-    API_URL: 'https://vietspeakai.tranhungdaocfs.site/api',
+    API_URL: 'https://adminvietspeakai.tranhungdaocfs.site/api',
     DEBUG: false
 };
 

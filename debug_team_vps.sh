@@ -29,8 +29,8 @@ echo ""
 
 echo "2️⃣ Testing API Endpoint..."
 echo "-------------------------------------------"
-echo "🌐 Calling: https://vietspeakai.tranhungdaocfs.site/api/public/team"
-curl -s https://vietspeakai.tranhungdaocfs.site/api/public/team | jq '.' 2>/dev/null || curl -s https://vietspeakai.tranhungdaocfs.site/api/public/team
+echo "🌐 Calling: https://adminvietspeakai.tranhungdaocfs.site/api/public/team"
+curl -s https://adminvietspeakai.tranhungdaocfs.site/api/public/team | jq '.' 2>/dev/null || curl -s https://adminvietspeakai.tranhungdaocfs.site/api/public/team
 echo ""
 echo ""
 

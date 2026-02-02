@@ -1,5 +1,5 @@
 // team.js - Load team members dynamically
-const API_BASE_URL = 'https://vietspeakai.tranhungdaocfs.site';
+const API_BASE_URL = 'https://adminvietspeakai.tranhungdaocfs.site';
 
 document.addEventListener('DOMContentLoaded', async function() {
     try {
