@@ -37,7 +37,7 @@ echo ""
 echo "3️⃣ Testing Frontend Access..."
 echo "-------------------------------------------"
 echo "🌐 Checking if team.js is accessible:"
-curl -I https://khanhwiee.site/team.js 2>&1 | head -5
+curl -I https://vietspeakai.tranhungdaocfs.site/team.js 2>&1 | head -5
 echo ""
 
 echo "4️⃣ Docker Status..."
