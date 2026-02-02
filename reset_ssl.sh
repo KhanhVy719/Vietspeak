@@ -23,7 +23,8 @@ if [ ! -f ".env.prod" ]; then
 fi
 
 echo "🚀 Khởi động lại hệ thống..."
-docker compose -f docker-compose.prod.yml up -d --force-recreate
+# FIX: Explicitly load .env.prod to avoid "variable is not set" warnings
+docker compose -f docker-compose.prod.yml --env-file .env.prod up -d --force-recreate
 
 echo "✅ Hoàn tất! Quá trình xin SSL mới sẽ mất khoảng 1-2 phút."
 echo "👉 Hãy kiểm tra logs xem có lỗi gì không: docker logs -f nginx-proxy-acme"
